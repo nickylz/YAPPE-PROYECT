@@ -8,21 +8,17 @@ import './index.css';
 import { AuthProvider } from './context/authContext.jsx';
 import { EdicionProvider } from './context/EdicionContext.jsx';
 import { ModalProvider } from './context/ModalContext.jsx';
-import { FavoritosProvider } from './context/FavoritosContext.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        {/* Favoritos, Carrito y Edicion necesitan acceso a AuthProvider */}
-        <FavoritosProvider>
-          <EdicionProvider>
-            {/* ModalProvider puede ir aquí o más afuera si no depende de los otros */}
-            <ModalProvider>
-              <App />
-            </ModalProvider>
-          </EdicionProvider>
-        </FavoritosProvider>
+        <EdicionProvider>
+          {/* ModalProvider puede ir aquí o más afuera si no depende de los otros */}
+          <ModalProvider>
+            <App />
+          </ModalProvider>
+        </EdicionProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

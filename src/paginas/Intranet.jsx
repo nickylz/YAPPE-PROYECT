@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
-import FormProductos from "../componentes/FormProductos";
 import GestionUsuarios from "../componentes/GestionUsuarios";
-import AdminProductos from "../componentes/AdminProductos";
 import GestionReclamos from "../componentes/GestionReclamos";
 
 export default function Intranet() {
@@ -14,7 +12,6 @@ export default function Intranet() {
 
   // La pestaña "Gestión de Productos" se elimina de la navegación principal
   const allTabs = [
-    { id: 'listaProductos', label: 'Almacén de Productos', roles: ['admin', 'editor'], component: <AdminProductos /> },
     { id: 'reclamos', label: 'Gestión de Reclamos', roles: ['admin'], component: <GestionReclamos /> },
     { id: 'usuarios', label: 'Gestión de Usuarios', roles: ['admin'], component: <GestionUsuarios /> },
   ];
@@ -48,27 +45,11 @@ export default function Intranet() {
   }
 
   const renderContent = () => {
-    const params = new URLSearchParams(location.search);
-    const idProductoEditar = params.get('editar');
-    const isCreating = params.get('crear') === 'true';
-
-    // Si la URL indica editar o crear, se muestra el formulario de productos.
-    if (idProductoEditar || isCreating) {
-      const title = idProductoEditar ? "Editar Producto" : "Crear Producto Nuevo";
-      return (
-        <>
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#8f2133] mb-6 sm:mb-8 text-center md:text-left">{title}</h2>
-          <FormProductos idProductoEditar={idProductoEditar} />
-        </>
-      );
-    }
-
-    // Si no, se muestra el contenido de la pestaña activa.
+    // Se muestra el contenido de la pestaña activa.
     const activeTabDetails = availableTabs.find(tab => tab.id === activeTab);
     if (!activeTabDetails) return null;
 
     let title = activeTabDetails.label;
-    if (activeTab === 'listaProductos') title = "Lista y Gestión de Productos";
     if (activeTab === 'reclamos') title = "Gestión de Reclamos y Quejas";
 
     return (

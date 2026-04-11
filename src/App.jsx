@@ -14,15 +14,10 @@ import "./App.css";
 const Inicio = lazy(() => import("./paginas/Index"));
 const Nosotros = lazy(() => import("./paginas/Nosotros"));
 const Productos = lazy(() => import("./paginas/Productos"));
-const ProductoDetalle = lazy(() => import("./paginas/ProductoDetalle"));
-const Novedades = lazy(() => import("./paginas/Novedades"));
 const Perfil = lazy(() => import("./paginas/Perfil"));
 const Intranet = lazy(() => import("./paginas/Intranet"));
 const LibroDeReclamaciones = lazy(() =>
   import("./paginas/LibroDeReclamaciones")
-);
-const PoliticaPrivacidad = lazy(() =>
-  import("./paginas/PoliticaPrivacidad")
 );
 
 function App() {
@@ -44,17 +39,11 @@ function App() {
             <Route path="/" element={<Inicio />} />
             <Route path="/nosotros" element={<Nosotros />} />
             <Route path="/productos" element={<Productos />} />
-            <Route path="/productos/:id" element={<ProductoDetalle />} />
-            <Route path="/novedades" element={<Novedades />} />
             <Route path="/perfil/:username" element={<Perfil />} />
             <Route path="/intranet" element={<Intranet />} />
             <Route
               path="/libro-de-reclamaciones"
               element={<LibroDeReclamaciones />}
-            />
-            <Route
-              path="/politica-de-privacidad"
-              element={<PoliticaPrivacidad />}
             />
           </Route>
         </Routes>

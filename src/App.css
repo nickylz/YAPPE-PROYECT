@@ -21,15 +21,6 @@ body {
   margin: 0;
 }
 
-/* --- Transiciones suaves para tarjetas y barras --- */
-.testimonial-card {
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-.progress-bar-fill {
-  transition: width 0.5s ease-in-out;
-}
-
 /* --- Ocultar la barra de desplazamiento --- */
 ::-webkit-scrollbar {
   display: none; /* Para navegadores WebKit como Chrome, Safari */

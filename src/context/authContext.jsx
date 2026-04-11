@@ -162,35 +162,37 @@ export const AuthProvider = ({ children }) => {
             if (imageFile) {
                 toast.custom((t) => (
                   <div
-                    className={`${t.visible ? 'animate-enter' : 'animate-leave'} relative max-w-sm w-full bg-white shadow-2xl rounded-xl pointer-events-auto ring-1 ring-black ring-opacity-5`}>
-                    <div className="absolute left-0 top-0 bottom-0 w-2 bg-[#d16170] rounded-l-xl"></div>
+                    className={`${t.visible ? 'animate-enter' : 'animate-leave'} relative max-w-sm w-full bg-gradient-to-r from-[#7e1d91] via-[#9f53c1] to-[#bd6fe4] shadow-2xl rounded-3xl pointer-events-auto ring-1 ring-white/10 overflow-hidden`}>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.28),_transparent_45%)] pointer-events-none" />
                     <button
                         onClick={() => toast.dismiss(t.id)}
-                        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors z-10"
+                        className="absolute top-3 right-3 text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors z-10"
                     >
                       <span className="sr-only">Cerrar</span>
                       <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                       </svg>
                     </button>
-                    <div className="flex items-center p-4 pl-6">
+                    <div className="flex items-center p-5 gap-4 relative">
                         <div className="flex-shrink-0 relative">
-                            <img
-                                className="h-14 w-14 rounded-full object-cover border-2 border-white shadow-md"
-                                src={newPhotoURL}
-                                alt="Nueva foto de perfil"
-                            />
-                            <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1 border-2 border-white">
+                            <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-xl border border-white/20 bg-white/20">
+                              <img
+                                  className="h-full w-full object-cover"
+                                  src={newPhotoURL}
+                                  alt="Nueva foto de perfil"
+                              />
+                            </div>
+                            <div className="absolute -bottom-1 -right-1 bg-[#5eead4] rounded-full p-1 border-2 border-white shadow-sm">
                                 <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                 </svg>
                             </div>
                         </div>
-                        <div className="ml-5 flex-1">
-                            <p className="text-lg font-semibold text-gray-800">
+                        <div className="flex-1 text-left">
+                            <p className="text-lg font-semibold text-white">
                                 ¡Éxito!
                             </p>
-                            <p className="mt-1 text-sm text-gray-600">
+                            <p className="mt-1 text-sm text-[#f3e6ff]">
                                 Tu foto de perfil ha sido actualizada.
                             </p>
                         </div>

@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Testimonials from "../componentes/Testimonials";
 import incono from "../componentes/img/Bom.png";
 
 const Shape = ({ className }) => <div className={`absolute ${className} z-0`} style={{ borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%' }}></div>;
@@ -105,7 +104,7 @@ export default function Inicio() {
                 <h2 className="text-3xl md:text-5xl font-extrabold text-[#9c2007]" style={{ fontFamily: 'serif' }}>
                   Postres Estrella
                 </h2>
-                <p className="text-sm md:text-lg text-gray-600 mt-3 max-w-2xl mx-auto">Los favoritos de siempre, los que se roban todos los suspiros.</p>
+                <p className="text-sm md:text-lg text-gray-600 mt-3 max-w-2xl mx-auto">Los postres de siempre, los que se roban todos los suspiros.</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
@@ -147,11 +146,6 @@ export default function Inicio() {
             </div>
         </div>
       </section>
-      
-      {/* ===== SECCIÓN DE COMENTARIOS ===== */}
-      <div className="pt-10">
-        <Testimonials />
-      </div>
 
     </main>
   );

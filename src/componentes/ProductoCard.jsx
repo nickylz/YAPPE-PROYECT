@@ -1,29 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../context/authContext";
-import { useFavoritos } from "../context/FavoritosContext";
-import { Heart } from "lucide-react";
 
 export default function ProductoCard({
   producto,
   mostrarBoton = true,
-  mostrarFavoritos = true,
-  esEnlace = true,
 }) {
-  const { usuarioActual } = useAuth();
-  const { esFavorito, agregarAFavoritos, removerDeFavoritos } = useFavoritos();
-
-  const isFavorito = esFavorito(producto.id);
-
-  const handleFavoritoClick = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (isFavorito) {
-      removerDeFavoritos(producto.id);
-    } else {
-      agregarAFavoritos(producto);
-    }
-  };
 
   const tieneDescuento =
     typeof producto.descuento === "number" && producto.descuento > 0;
@@ -84,30 +64,10 @@ export default function ProductoCard({
         </div>
       )}
 
-      {esEnlace ? (
-        <Link to={`/productos/${producto.id}`} className="block grow">
-          <CardContent />
-        </Link>
-      ) : (
-        <div className="block grow">
-          <CardContent />
-        </div>
-      )}
+      <div className="block grow">
+        <CardContent />
+      </div>
 
-      {/* Botón de favoritos (corazón) */}
-      {usuarioActual && mostrarFavoritos && (
-        <button
-          onClick={handleFavoritoClick}
-          className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm rounded-full p-2 text-gray-400 hover:text-red-500 transition-all duration-300 z-30 opacity-100 md:opacity-0 md:group-hover:opacity-100"
-          title={isFavorito ? "Quitar de favoritos" : "Añadir a favoritos"}
-        >
-          <Heart
-            size={22}
-            fill={isFavorito ? "#ef4444" : "none"}
-            stroke={isFavorito ? "#ef4444" : "currentColor"}
-          />
-        </button>
-      )}
     </div>
   );
 }

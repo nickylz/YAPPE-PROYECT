@@ -18,12 +18,8 @@ export const MascotProvider = ({ children }) => {
     setMood('idle');
     const path = location.pathname;
     
-    if (path === '/novedades') {
-      triggerAction('thinking', '¿Qué cosita nueva probaremos? 🤔');
-    } else if (path === '/productos') {
+    if (path === '/productos') {
        triggerAction('happy', '¡Uff, cuántas opciones ricas! 🍰');
-    } else if (path.includes('/productos/')) {
-       triggerAction('reading', 'Mira los detalles y opiniones 👀');
     } else if (path === '/nosotros') {
        setMessage('¡Conoce nuestra dulce historia! 📖');
     } else {

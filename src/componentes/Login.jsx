@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/authContext";
 import { useModal as useAppModal } from "../context/ModalContext";
 import { FcGoogle } from "react-icons/fc";
-import Ajustes from "./Ajustes";
+import { LogOut } from "lucide-react";
 import Modal from "./Modal";
 import { Link } from "react-router-dom";
 
@@ -32,13 +32,12 @@ const Avatar = ({ user, className = '' }) => {
 };
 // --- Fin de la lógica del Avatar ---
 
-export default function Login() {
+export default function Login({ isScrolled = false }) {
   const { usuarioActual, iniciarSesion, registrarUsuario, iniciarConGoogle, cerrarSesion } = useAuth();
   const { mostrarModal: mostrarNotificacion } = useAppModal();
 
   const [modalLoginOpen, setModalLoginOpen] = useState(false);
   const [modalRegistroOpen, setModalRegistroOpen] = useState(false);
-  const [modalAjustesOpen, setModalAjustesOpen] = useState(false);
 
   const [loginIdentifier, setLoginIdentifier] = useState("");
   const [loginPass, setLoginPass] = useState("");
@@ -86,15 +85,6 @@ export default function Login() {
     setModalRegistroOpen(true);
   }
 
-  const handleLogout = async () => {
-    try {
-      await cerrarSesion();
-      mostrarNotificacion("Sesión cerrada", "Has cerrado sesión exitosamente.");
-    } catch (error) {
-      mostrarNotificacion("Error", "No se pudo cerrar la sesión.");
-    }
-  };
-
   const nombreMostrado = usuarioActual?.nombre || "Usuario";
   const usernameMostrado = usuarioActual?.username || "usuario";
 
@@ -102,48 +92,22 @@ export default function Login() {
     <>
       {usuarioActual ? (
         <div className="w-full">
-          {/* --- Vista para el menú lateral (móvil) --- */}
-          <div className="md:hidden">
-            <div className="bg-[#fff3f0] border border-[#f5bfb2] rounded-2xl p-4 text-center">
-              <div className="flex items-center gap-3 mb-4">
-                <Avatar user={usuarioActual} className="w-12 h-12 border-2 border-[#d8718c]" />
-                <div className="text-left">
-                  <p className="text-[#7a1a0a] font-semibold text-base leading-tight">{nombreMostrado}</p>
-                  <p className="text-[#9c2007] text-sm leading-tight">@{usernameMostrado}</p>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <Link
-                  to={`/perfil/${usernameMostrado}`}
-                  className="w-full block bg-white border border-[#d8718c] text-[#d8718c] py-2 rounded-xl hover:bg-[#ffe5e0] transition font-semibold"
-                >
-                  Gestionar Perfil
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="w-full bg-[#d16170] text-white py-2 rounded-xl hover:bg-[#b84c68] transition font-semibold"
-                >
-                  Cerrar Sesión
-                </button>
-              </div>
-            </div>
+          <div className="flex items-center gap-2">
+            <Link
+              to={`/perfil/${usernameMostrado}`}
+              className={`flex items-center gap-3 rounded-full px-3 py-2 transition ${isScrolled ? 'bg-white/90 shadow-sm' : 'bg-white/10 hover:bg-white/20'}`}
+            >
+              <Avatar user={usuarioActual} className="w-10 h-10" />
+              <span className={`font-semibold hidden sm:inline-block ${isScrolled ? 'text-[#42346c]' : 'text-white'}`}>Mi cuenta</span>
+            </Link>
+            <button
+              onClick={cerrarSesion}
+              className={`p-2 rounded-full transition ${isScrolled ? 'text-[#42346c] hover:bg-slate-100' : 'text-white hover:bg-white/20'}`}
+              title="Cerrar sesión"
+            >
+              <LogOut size={20} />
+            </button>
           </div>
-
-          {/* --- Vista para la barra de navegación (desktop) --- */}
-          <div className="hidden md:block relative">
-             <div className="flex items-center gap-2 cursor-pointer" onClick={() => setModalAjustesOpen(!modalAjustesOpen)}>
-                <Avatar user={usuarioActual} className="w-10 h-10 border-2 border-[#d8718c]" />
-                <span className="text-[#7a1a0a] font-semibold hidden sm:block">
-                  {nombreMostrado.length > 15 ? nombreMostrado.split(" ")[0] : nombreMostrado}
-                </span>
-              </div>
-          </div>
-          
-          <Ajustes
-            isOpen={modalAjustesOpen}
-            onClose={() => setModalAjustesOpen(false)}
-            user={usuarioActual} // Prop corregida para pasar el objeto de usuario completo
-          />
         </div>
       ) : (
         <button

@@ -12,6 +12,7 @@ export default function NavBar() {
   const location = useLocation();
 
   const puedeVerIntranet = usuarioActual?.rol === "admin" || usuarioActual?.rol === "editor";
+  const forceWhiteNavbar = location.pathname.includes('/perfil');
 
   useEffect(() => {
     setMenuOpen(false);
@@ -37,32 +38,31 @@ export default function NavBar() {
 
   return (
     <>
-      <header className="bg-[#7e1d91] border-b border-[#6a187a] shadow-xl sticky top-0 z-50 transition-all duration-300">
-        <div className={`max-w-6xl mx-auto px-4 ${isScrolled ? 'py-2' : 'py-4'} flex flex-wrap items-center justify-between gap-4`}>
+      <header className={`${forceWhiteNavbar || isScrolled ? 'bg-white border-b border-slate-200 shadow-sm' : 'bg-[#7e1d91] border-b border-[#6a187a] shadow-xl'} sticky top-0 z-50 transition-all duration-300`}>
+        <div className={`max-w-6xl mx-auto px-4 ${forceWhiteNavbar || isScrolled ? 'py-2' : 'py-4'} flex flex-wrap items-center justify-between gap-4`}>
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center justify-center rounded-3xl p-2 transition">
-              <img src={yapeLogo} alt="Yape" className={`${isScrolled ? 'w-14 h-14' : 'w-20 h-20'} object-contain transition-all duration-300`} />
+              <img src={yapeLogo} alt="Yape" className={`${forceWhiteNavbar || isScrolled ? 'w-14 h-14' : 'w-20 h-20'} object-contain transition-all duration-300`} />
             </Link>
           </div>
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-3 flex-1 justify-start lg:pl-4">
-            <Link to="/" className="text-white font-semibold py-2 px-4 rounded-full hover:bg-white/20 transition-colors">Inicio</Link>
-            <Link to="/productos" className="text-white font-semibold py-2 px-4 rounded-full hover:bg-white/20 transition-colors">Productos</Link>
-            <Link to="/nosotros" className="text-white font-semibold py-2 px-4 rounded-full hover:bg-white/20 transition-colors">Nosotros</Link>
-            <Link to="/novedades" className="text-white font-semibold py-2 px-4 rounded-full hover:bg-white/20 transition-colors">Novedades</Link>
+            <Link to="/" className={`${forceWhiteNavbar || isScrolled ? 'text-[#42346c] hover:text-[#7e1d91]' : 'text-white'} font-semibold py-2 px-4 rounded-full ${forceWhiteNavbar || isScrolled ? 'hover:bg-slate-100' : 'hover:bg-white/20'} transition-colors`}>Inicio</Link>
+            <Link to="/productos" className={`${forceWhiteNavbar || isScrolled ? 'text-[#42346c] hover:text-[#7e1d91]' : 'text-white'} font-semibold py-2 px-4 rounded-full ${forceWhiteNavbar || isScrolled ? 'hover:bg-slate-100' : 'hover:bg-white/20'} transition-colors`}>Productos</Link>
+            <Link to="/nosotros" className={`${forceWhiteNavbar || isScrolled ? 'text-[#42346c] hover:text-[#7e1d91]' : 'text-white'} font-semibold py-2 px-4 rounded-full ${forceWhiteNavbar || isScrolled ? 'hover:bg-slate-100' : 'hover:bg-white/20'} transition-colors`}>Nosotros</Link>
             {puedeVerIntranet && (
-              <Link to="/intranet" className="text-white font-semibold py-2 px-4 rounded-full hover:bg-white/20 transition-colors">Intranet</Link>
+              <Link to="/intranet" className={`${forceWhiteNavbar || isScrolled ? 'text-[#42346c] hover:text-[#7e1d91]' : 'text-white'} font-semibold py-2 px-4 rounded-full ${forceWhiteNavbar || isScrolled ? 'hover:bg-slate-100' : 'hover:bg-white/20'} transition-colors`}>Intranet</Link>
             )}
           </nav>
 
           <div className="flex items-center gap-4">
             <div className="hidden lg:block">
-              <Login />
+              <Login isScrolled={forceWhiteNavbar || isScrolled} />
             </div>
             <button
               onClick={() => setMenuOpen(true)}
-              className="text-white text-2xl lg:hidden"
+              className={`${forceWhiteNavbar || isScrolled ? 'text-[#42346c]' : 'text-white'} text-2xl lg:hidden`}
               aria-label="Abrir menú"
             >
               <FaBars size={28} />
@@ -102,7 +102,6 @@ export default function NavBar() {
                 <Link to="/" className="text-white font-semibold p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors">Inicio</Link>
                 <Link to="/productos" className="text-white font-semibold p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors">Productos</Link>
                 <Link to="/nosotros" className="text-white font-semibold p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors">Nosotros</Link>
-                <Link to="/novedades" className="text-white font-semibold p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors">Novedades</Link>
                 {puedeVerIntranet && (
                     <Link to="/intranet" className="text-white font-semibold p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors">Intranet</Link>
                 )}

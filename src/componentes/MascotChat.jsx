@@ -65,7 +65,6 @@ const MascotChat = ({ onClose, triggerAction, anchorClass }) => {
     triggerAction('idle');
     setOptions([
       { label: 'Recomiéndame algo rico 😋', action: 'recomendar' },
-      { label: '¿Qué hay de nuevo? ✨', action: 'novedades' },
       { label: 'Cuéntame un chisme 🤫', action: 'secreto' },
       { label: 'Nada, solo pasaba (Bajar) ⬇️', action: 'cerrar' }
     ]);
@@ -90,15 +89,6 @@ const MascotChat = ({ onClose, triggerAction, anchorClass }) => {
         ]);
         break;
 
-      case 'novedades':
-        triggerAction('happy');
-        addMessage('bot', '¡Uy, acabamos de sacar unas cosas que huelen... uff!');
-        setOptions([
-          { label: 'A ver, muéstrame', action: 'ir_novedades' },
-          { label: 'Luego lo veo', action: 'menu' }
-        ]);
-        break;
-
       case 'secreto':
         triggerAction('reading'); 
         addMessage('bot', 'Acércate, que no nos escuche el jefe...');
@@ -113,12 +103,6 @@ const MascotChat = ({ onClose, triggerAction, anchorClass }) => {
         addMessage('bot', '¡Vamonos! 🚀');
         await delay(500);
         navigate('/productos');
-        break;
-
-      case 'ir_novedades':
-        addMessage('bot', '¡Ojos bien abiertos! ✨');
-        await delay(500);
-        navigate('/novedades');
         break;
 
       case 'menu':
