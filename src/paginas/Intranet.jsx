@@ -29,7 +29,7 @@ export default function Intranet() {
   // Pantalla de error si no hay acceso o usuario
   if (!usuarioActual || availableTabs.length === 0) {
     return (
-      <div className="min-h-screen bg-[#fff3f0] flex items-center justify-center text-center p-4">
+      <div className="min-h-screen bg-[#ffffff] flex items-center justify-center text-center p-4">
         <div className="bg-white rounded-4xl shadow-xl p-8 max-w-md border border-[#e6d7ff]">
           <h1 className="text-3xl font-bold text-[#7e1d91]">Acceso Denegado</h1>
           <p className="text-[#4f2f7a] mt-4 font-medium">No tienes los permisos necesarios para ver esta página.</p>
@@ -42,7 +42,7 @@ export default function Intranet() {
   const activeTabLabel = activeTabDetails?.label;
 
   return (
-    <div className="min-h-screen bg-[#fff3f0]">
+    <div className="min-h-screen bg-[#ffffff]">
       {/* --- Banner de Bienvenida (Estilo Perfil.jsx) --- */}
       <div className="w-full bg-linear-to-r from-[#7e1d91] via-[#8f3cbf] to-[#bd6fe4] shadow-[0_40px_120px_rgba(126,29,145,0.18)] py-16 md:py-20 text-center text-white mb-10">
         <p className="text-sm uppercase tracking-[0.35em] text-[#f3e6ff]/90 mb-4">Panel de Administración</p>
