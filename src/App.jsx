@@ -13,6 +13,7 @@ import "./App.css";
 // PÁGINAS CON LAZY LOADING
 const Inicio = lazy(() => import("./paginas/Index"));
 const Nosotros = lazy(() => import("./paginas/Nosotros"));
+const CentrodeAyuda = lazy(() => import("./paginas/CentrodeAyuda"));
 const Productos = lazy(() => import("./paginas/Productos"));
 const Perfil = lazy(() => import("./paginas/Perfil"));
 const Intranet = lazy(() => import("./paginas/Intranet"));
@@ -38,6 +39,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<Inicio />} />
             <Route path="/nosotros" element={<Nosotros />} />
+            <Route path="/centro-de-ayuda" element={<CentrodeAyuda />} />
             <Route path="/productos" element={<Productos />} />
             <Route path="/perfil/:username" element={<Perfil />} />
             <Route path="/intranet" element={<Intranet />} />

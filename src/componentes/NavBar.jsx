@@ -108,6 +108,16 @@ export default function NavBar() {
               >
                 Nosotros
               </Link>
+            <Link
+                to="/centrodeayuda"
+                className={`${
+                    isWhite
+                      ? "text-[#42346c] hover:bg-slate-100"
+                      : "text-white hover:bg-white/20"
+                  } font-semibold px-3 py-1.5 rounded-full transition`}
+                >Centro de Ayuda </Link>
+
+
               {puedeVerIntranet && (
                 <Link
                   to="/intranet"
