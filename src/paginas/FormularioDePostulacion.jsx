@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { db } from "../lib/firebase"; 
+import { db } from "../lib/firebase";
 import { collection, addDoc } from "firebase/firestore";
-import { 
-  User, Mail, Phone, Link2, FileText, 
-  ArrowLeft, CheckCircle2, Loader 
+import {
+  User, Mail, Phone, Link2, FileText,
+  ArrowLeft, CheckCircle2, Loader
 } from "lucide-react";
 import toast from "react-hot-toast";
-import cvImg from "../componentes/img/cvimg.png"; 
+import cvImg from "../componentes/img/cvimg.png";
 
 export default function FormularioDePostulacion() {
   const { id } = useParams();
@@ -24,7 +24,7 @@ export default function FormularioDePostulacion() {
   const inputClass = "w-full pl-12 pr-4 py-4 bg-white border-2 border-[#f0ebf5] rounded-2xl text-base md:text-lg text-[#3b0f52] font-semibold transition-all placeholder:text-gray-300 focus:outline-none focus:border-[#7e1d91] focus:ring-4 focus:ring-[#7e1d91]/5 shadow-sm";
 
   const handleCelularChange = (e) => {
-    const value = e.target.value.replace(/\D/g, ""); 
+    const value = e.target.value.replace(/\D/g, "");
     if (value.length <= 9) setCelular(value);
   };
 
@@ -41,13 +41,13 @@ export default function FormularioDePostulacion() {
     try {
       // Guardado en Firestore directamente con el Link
       await addDoc(collection(db, "postulaciones"), {
-        nombrePostulante: nombre,
-        correo: email,
-        telefono: celular,
-        vacanteId: id || "general",
+        nombre,
+        email,
+        celular,
         cvUrl: linkCV,
-        metodoEnvio: "link",
-        fecha: new Date().toLocaleString(),
+        vacanteId: id, 
+        fecha: new Date(),
+        estado: "Pendiente",
       });
 
       setEnviado(true);
@@ -93,23 +93,23 @@ export default function FormularioDePostulacion() {
               {/* SECCIÓN INFORMACIÓN PERSONAL */}
               <div className="space-y-8">
                 <div className="flex items-center gap-4 border-b border-gray-100 pb-6">
-                   <div className="p-3 bg-[#fcfaff] rounded-2xl text-[#7e1d91]"><User size={24} /></div>
-                   <h3 className="text-2xl font-black text-[#3b0f52] uppercase">Tu Información</h3>
+                  <div className="p-3 bg-[#fcfaff] rounded-2xl text-[#7e1d91]"><User size={24} /></div>
+                  <h3 className="text-2xl font-black text-[#3b0f52] uppercase">Tu Información</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-3">
                     <label className={labelClass}>Nombre Completo</label>
                     <div className="relative">
-                       <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
-                       <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className={inputClass} placeholder="Ej. Juan Pérez" />
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
+                      <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className={inputClass} placeholder="Ej. Juan Pérez" />
                     </div>
                   </div>
                   <div className="space-y-3">
                     <label className={labelClass}>Correo Electrónico</label>
                     <div className="relative">
-                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
-                       <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} placeholder="nombre@gmail.com" />
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
+                      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} placeholder="nombre@gmail.com" />
                     </div>
                   </div>
                 </div>
@@ -126,29 +126,29 @@ export default function FormularioDePostulacion() {
               {/* SECCIÓN DOCUMENTACIÓN (SOLO LINK) */}
               <div className="space-y-8 pt-6">
                 <div className="flex items-center gap-4 border-b border-gray-100 pb-6">
-                   <div className="p-3 bg-[#fcfaff] rounded-2xl text-[#25d3c9]"><FileText size={24} /></div>
-                   <h3 className="text-2xl font-black text-[#3b0f52] uppercase">Documentación</h3>
+                  <div className="p-3 bg-[#fcfaff] rounded-2xl text-[#25d3c9]"><FileText size={24} /></div>
+                  <h3 className="text-2xl font-black text-[#3b0f52] uppercase">Documentación</h3>
                 </div>
 
                 <div className="space-y-3">
                   <label className={labelClass}>Link de Google Drive, LinkedIn o Portafolio</label>
                   <div className="relative">
                     <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
-                    <input 
-                      type="url" 
-                      value={linkCV} 
-                      onChange={(e) => setLinkCV(e.target.value)} 
-                      className={inputClass} 
-                      placeholder="https://drive.google.com/..." 
+                    <input
+                      type="url"
+                      value={linkCV}
+                      onChange={(e) => setLinkCV(e.target.value)}
+                      className={inputClass}
+                      placeholder="https://drive.google.com/..."
                     />
                   </div>
                   <p className="text-xs text-gray-400 ml-2 italic">Asegúrate de que el enlace sea público para que podamos verlo.</p>
                 </div>
               </div>
 
-              <button 
-                type="submit" 
-                disabled={cargando} 
+              <button
+                type="submit"
+                disabled={cargando}
                 className="w-full bg-[#7e1d91] text-white text-xl font-black py-6 rounded-2xl shadow-xl hover:bg-[#3b0f52] hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50 uppercase tracking-[0.2em] italic"
               >
                 {cargando ? <Loader className="animate-spin" size={28} /> : <>Enviar Postulación <CheckCircle2 size={24} /></>}
