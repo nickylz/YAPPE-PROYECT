@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import GestionUsuarios from "../componentes/GestionUsuarios";
 import GestionReclamos from "../componentes/GestionReclamos";
+import GestionPostulaciones from "../componentes/GestionPostulaciones"; // Importa el nuevo
 
 export default function Intranet() {
   const { usuarioActual } = useAuth();
@@ -13,6 +14,7 @@ export default function Intranet() {
   const allTabs = [
     { id: 'reclamos', label: 'Gestión de Reclamos', roles: ['admin'], component: <GestionReclamos /> },
     { id: 'usuarios', label: 'Gestión de Usuarios', roles: ['admin'], component: <GestionUsuarios /> },
+    { id: 'postulaciones', label: 'Gestión de CVs', roles: ['admin'], component: <GestionPostulaciones /> },
   ];
 
   const availableTabs = allTabs.filter(tab => tab.roles.includes(usuarioActual?.rol));

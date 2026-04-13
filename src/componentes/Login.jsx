@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/authContext";
 import { useModal as useAppModal } from "../context/ModalContext";
 import { FcGoogle } from "react-icons/fc";
-import { FaSignOutAlt } from "react-icons/fa"; // Icono de la puerta que quieres
+import { FaSignOutAlt } from "react-icons/fa"; 
 import Modal from "./Modal";
-import { Link, useNavigate } from "react-router-dom"; // Importamos useNavigate para la redirección
+import { Link, useNavigate } from "react-router-dom";
 
 // --- Lógica del Avatar ---
 const getInitials = (name) => {
@@ -25,7 +25,7 @@ const Avatar = ({ user, className = '' }) => {
   }
 
   return (
-    <div className={`flex items-center justify-center rounded-full bg-[#d16170] text-white font-bold ${className}`} title={nombre}>
+    <div className={`flex items-center justify-center rounded-full bg-[#7e1d91] text-white font-black italic ${className}`} title={nombre}>
       <span>{getInitials(nombre)}</span>
     </div>
   );
@@ -34,7 +34,7 @@ const Avatar = ({ user, className = '' }) => {
 export default function Login({ isScrolled = false }) {
   const { usuarioActual, iniciarSesion, registrarUsuario, iniciarConGoogle, cerrarSesion } = useAuth();
   const { mostrarModal: mostrarNotificacion } = useAppModal();
-  const navigate = useNavigate(); // Inicializamos el hook de navegación
+  const navigate = useNavigate();
 
   const [modalLoginOpen, setModalLoginOpen] = useState(false);
   const [modalRegistroOpen, setModalRegistroOpen] = useState(false);
@@ -47,6 +47,10 @@ export default function Login({ isScrolled = false }) {
   const [regPass, setRegPass] = useState("");
   const [regFoto, setRegFoto] = useState(null);
 
+  // Estilos base extraídos del formulario de postulación
+  const inputClass = "w-full bg-white border-2 border-[#f0ebf5] text-[#3b0f52] px-4 py-3 rounded-2xl text-sm font-semibold transition-all focus:outline-none focus:border-[#7e1d91] focus:ring-4 focus:ring-[#7e1d91]/5 shadow-sm placeholder:text-gray-300";
+  const labelClass = "block text-[10px] font-black text-[#3b0f52] uppercase tracking-[0.15em] ml-1 mb-1 opacity-70";
+
   useEffect(() => {
     if (usuarioActual && (modalLoginOpen || modalRegistroOpen)) {
       setModalLoginOpen(false);
@@ -54,11 +58,10 @@ export default function Login({ isScrolled = false }) {
     }
   }, [usuarioActual, modalLoginOpen, modalRegistroOpen]);
 
-  // Función para cerrar sesión y mandar siempre al index
   const handleLogout = async () => {
     try {
-      await cerrarSesion(); // Llama a la función de Firebase en el context
-      navigate("/");        // Redirección forzada al inicio
+      await cerrarSesion();
+      navigate("/");
     } catch (err) {
       console.error("Error al cerrar sesión:", err);
     }
@@ -100,26 +103,24 @@ export default function Login({ isScrolled = false }) {
       {usuarioActual ? (
         <div className="w-full">
           <div className="flex items-center gap-2">
-            {/* Link a mi cuenta con la foto */}
             <Link
               to={`/perfil/${usernameMostrado}`}
-              className={`flex items-center gap-3 rounded-full px-3 py-2 transition ${
-                isScrolled ? 'bg-white/90 shadow-sm' : 'bg-white/10 hover:bg-white/20'
+              className={`flex items-center gap-3 rounded-[20px] px-4 py-2 transition-all ${
+                isScrolled ? 'bg-white shadow-sm border border-[#f0ebf5]' : 'bg-white/10 hover:bg-white/20'
               }`}
             >
-              <Avatar user={usuarioActual} className="w-10 h-10" />
-              <span className={`font-semibold hidden sm:inline-block ${
-                isScrolled ? 'text-[#42346c]' : 'text-white'
+              <Avatar user={usuarioActual} className="w-9 h-9 border-2 border-[#fcfaff]" />
+              <span className={`font-black uppercase italic text-xs tracking-wider hidden sm:inline-block ${
+                isScrolled ? 'text-[#3b0f52]' : 'text-white'
               }`}>
                 Mi cuenta
               </span>
             </Link>
 
-            {/* Único icono de cerrar sesión (Puerta) */}
             <button
               onClick={handleLogout}
-              className={`p-2 rounded-full transition hover:scale-110 ${
-                isScrolled ? 'text-[#7e1d91] hover:bg-slate-100' : 'text-white hover:bg-white/20'
+              className={`p-2.5 rounded-xl transition-all hover:scale-110 ${
+                isScrolled ? 'text-[#7e1d91] hover:bg-[#fcfaff]' : 'text-white hover:bg-white/20'
               }`}
               title="Cerrar sesión"
             >
@@ -130,50 +131,74 @@ export default function Login({ isScrolled = false }) {
       ) : (
         <button
           onClick={() => setModalLoginOpen(true)}
-          className="bg-[#fff3f0] border border-[#da6786] text-[#da6786] font-semibold px-4 py-1.5 rounded-xl hover:bg-[#ffe5e0] transition-colors duration-300"
+          className="bg-[#fcfaff] border-2 border-[#7e1d91]/20 text-[#7e1d91] font-black uppercase italic text-xs tracking-[0.1em] px-6 py-2.5 rounded-[18px] hover:bg-[#7e1d91] hover:text-white hover:border-[#7e1d91] transition-all duration-300 shadow-sm shadow-[#7e1d91]/5"
         >
           Iniciar sesión
         </button>
       )}
 
-      {/* --- Modales de Login y Registro --- */}
-      <Modal isOpen={modalLoginOpen} onClose={() => setModalLoginOpen(false)} title="Bienvenido">
+      {/* --- Modales con Estilo Yape --- */}
+      <Modal isOpen={modalLoginOpen} onClose={() => setModalLoginOpen(false)} title="HOLA YAPER">
         <form onSubmit={handleLogin} className="space-y-4">
-          <input type="text" placeholder="Correo o Nombre de usuario" value={loginIdentifier} onChange={(e) => setLoginIdentifier(e.target.value)} className="w-full bg-white border border-[#f5bfb2] text-[#7a1a0a] px-4 py-3 rounded-xl focus:ring-2 focus:ring-[#d8718c]"/>
-          <input type="password" placeholder="Contraseña" value={loginPass} onChange={(e) => setLoginPass(e.target.value)} className="w-full bg-white border border-[#f5bfb2] text-[#7a1a0a] px-4 py-3 rounded-xl focus:ring-2 focus:ring-[#d8718c]" />
+          <div className="space-y-1">
+            <label className={labelClass}>Identificación</label>
+            <input type="text" placeholder="Correo o Username" value={loginIdentifier} onChange={(e) => setLoginIdentifier(e.target.value)} className={inputClass}/>
+          </div>
+          <div className="space-y-1">
+            <label className={labelClass}>Tu Contraseña</label>
+            <input type="password" placeholder="••••••••" value={loginPass} onChange={(e) => setLoginPass(e.target.value)} className={inputClass} />
+          </div>
           <div className="grid grid-cols-2 gap-3 pt-4">
-            <button type="submit" className="bg-[#d16170] text-white py-3 rounded-xl hover:bg-[#b84c68] transition font-semibold">Iniciar sesión</button>
-            <button type="button" onClick={handleGoogleSignIn} className="flex items-center justify-center gap-2 border border-[#d8718c] text-[#d8718c] py-3 rounded-xl hover:bg-[#f5bfb2] transition font-semibold">
+            <button type="submit" className="bg-[#7e1d91] text-white py-4 rounded-2xl hover:bg-[#3b0f52] transition-all font-black uppercase italic text-xs tracking-widest shadow-lg shadow-[#7e1d91]/20">Entrar</button>
+            <button type="button" onClick={handleGoogleSignIn} className="flex items-center justify-center gap-2 border-2 border-[#f0ebf5] text-[#3b0f52] py-4 rounded-2xl hover:bg-[#fcfaff] transition-all font-black uppercase italic text-xs tracking-widest">
               <FcGoogle className="text-xl" /> Google
             </button>
           </div>
         </form>
-        <p className="text-[#7a1a0a] mt-6 text-center text-sm">
-          ¿No tienes cuenta?{" "}
-          <button onClick={() => { setModalLoginOpen(false); setModalRegistroOpen(true); }} className="text-[#d8718c] font-semibold hover:underline">Regístrate aquí</button>
+        <p className="text-[#3b0f52]/60 mt-8 text-center text-[11px] font-bold uppercase tracking-wider">
+          ¿Eres nuevo?{" "}
+          <button onClick={() => { setModalLoginOpen(false); setModalRegistroOpen(true); }} className="text-[#7e1d91] font-black hover:underline italic">Únete aquí</button>
         </p>
       </Modal>
 
-      <Modal isOpen={modalRegistroOpen} onClose={() => setModalRegistroOpen(false)} title="Crear cuenta">
-        <form onSubmit={handleRegistro} className="space-y-3">
-            <input type="email" placeholder="Correo" value={regCorreo} onChange={(e) => setRegCorreo(e.target.value)} className="w-full bg-white border border-[#f5bfb2] text-[#7a1a0a] px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-[#d8718c]"/>
-            <input type="text" placeholder="Nombre completo" value={regNombre} onChange={(e) => setRegNombre(e.target.value)} className="w-full bg-white border border-[#f5bfb2] text-[#7a1a0a] px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-[#d8718c]"/>
-            <input type="text" placeholder="Nombre de usuario" value={regUsername} onChange={(e) => setRegUsername(e.target.value)} className="w-full bg-white border border-[#f5bfb2] text-[#7a1a0a] px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-[#d8718c]"/>
-            <input type="password" placeholder="Contraseña" value={regPass} onChange={(e) => setRegPass(e.target.value)} className="w-full bg-white border border-[#f5bfb2] text-[#7a1a0a] px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-[#d8718c]"/>
-            <div>
-                <label htmlFor="foto-perfil" className="block text-sm font-medium text-[#8f2133] text-left mb-1">Foto de Perfil (Opcional)</label>
-                <input type="file" id="foto-perfil" accept="image/*" onChange={(e) => setRegFoto(e.target.files[0])} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#fff3f0] file:text-[#d16170] hover:file:bg-[#f5bfb2] border border-[#f5bfb2] rounded-xl"/>
+      <Modal isOpen={modalRegistroOpen} onClose={() => setModalRegistroOpen(false)} title="NUEVO TALENTO">
+        <form onSubmit={handleRegistro} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className={labelClass}>Nombre Completo</label>
+                <input type="text" placeholder="Ej. Juan Pérez" value={regNombre} onChange={(e) => setRegNombre(e.target.value)} className={inputClass}/>
+              </div>
+              <div className="space-y-1">
+                <label className={labelClass}>Username</label>
+                <input type="text" placeholder="juanp_24" value={regUsername} onChange={(e) => setRegUsername(e.target.value)} className={inputClass}/>
+              </div>
             </div>
+            
+            <div className="space-y-1">
+              <label className={labelClass}>Correo Electrónico</label>
+              <input type="email" placeholder="nombre@gmail.com" value={regCorreo} onChange={(e) => setRegCorreo(e.target.value)} className={inputClass}/>
+            </div>
+
+            <div className="space-y-1">
+              <label className={labelClass}>Contraseña</label>
+              <input type="password" placeholder="Crea una clave" value={regPass} onChange={(e) => setRegPass(e.target.value)} className={inputClass}/>
+            </div>
+
+            <div className="bg-[#fcfaff] p-4 rounded-2xl border border-[#f0ebf5]">
+                <label htmlFor="foto-perfil" className={labelClass}>Foto de Perfil (Opcional)</label>
+                <input type="file" id="foto-perfil" accept="image/*" onChange={(e) => setRegFoto(e.target.files[0])} className="block w-full text-[10px] text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-[#7e1d91] file:text-white hover:file:bg-[#3b0f52] file:uppercase file:italic cursor-pointer"/>
+            </div>
+
             <div className="grid grid-cols-2 gap-3 pt-3">
-                <button type="submit" className="bg-[#d16170] text-white py-3 rounded-xl hover:bg-[#b84c68] transition font-semibold">Crear cuenta</button>
-                <button type="button" onClick={handleGoogleSignIn} className="flex items-center justify-center gap-2 border border-[#d8718c] text-[#d8718c] py-3 rounded-xl hover:bg-[#f5bfb2] transition font-semibold">
+                <button type="submit" className="bg-[#7e1d91] text-white py-4 rounded-2xl hover:bg-[#3b0f52] transition-all font-black uppercase italic text-xs tracking-widest shadow-lg shadow-[#7e1d91]/20">Registrarme</button>
+                <button type="button" onClick={handleGoogleSignIn} className="flex items-center justify-center gap-2 border-2 border-[#f0ebf5] text-[#3b0f52] py-4 rounded-2xl hover:bg-[#fcfaff] transition-all font-black uppercase italic text-xs tracking-widest">
                 <FcGoogle className="text-xl" /> Google
                 </button>
             </div>
         </form>
-        <p className="text-[#7a1a0a] mt-5 text-sm">
+        <p className="text-[#3b0f52]/60 mt-6 text-center text-[11px] font-bold uppercase tracking-wider">
           ¿Ya tienes cuenta?{" "}
-          <button onClick={() => { setModalRegistroOpen(false); setModalLoginOpen(true); }} className="text-[#d8718c] font-semibold hover:underline">Inicia sesión</button>
+          <button onClick={() => { setModalRegistroOpen(false); setModalLoginOpen(true); }} className="text-[#7e1d91] font-black hover:underline italic">Inicia sesión</button>
         </p>
       </Modal>
     </>
