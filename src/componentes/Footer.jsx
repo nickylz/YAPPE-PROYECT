@@ -17,7 +17,7 @@ export default function Footer() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       // El texto "Volver arriba" aparece solo al hacer scroll hacia arriba
       // y después de haber bajado al menos 300px
       if (currentScrollY < lastScrollY.current && currentScrollY > 300) {
@@ -37,11 +37,31 @@ export default function Footer() {
   };
 
   const socialLinks = [
-    { icon: FaInstagram, href: "https://www.instagram.com/yapeoficial/", label: "Instagram" },
-    { icon: FaTiktok, href: "https://www.tiktok.com/@yapeoficial", label: "TikTok" },
-    { icon: FaFacebook, href: "https://www.facebook.com/yapeoficial", label: "Facebook" },
-    { icon: FaLinkedin, href: "https://pe.linkedin.com/company/yapeoficial", label: "LinkedIn" },
-    { icon: FaYoutube, href: "https://www.youtube.com/c/YapeOficial", label: "YouTube" },
+    {
+      icon: FaInstagram,
+      href: "https://www.instagram.com/yapeoficial/",
+      label: "Instagram",
+    },
+    {
+      icon: FaTiktok,
+      href: "https://www.tiktok.com/@yapeoficial",
+      label: "TikTok",
+    },
+    {
+      icon: FaFacebook,
+      href: "https://www.facebook.com/yapeoficial",
+      label: "Facebook",
+    },
+    {
+      icon: FaLinkedin,
+      href: "https://pe.linkedin.com/company/yapeoficial",
+      label: "LinkedIn",
+    },
+    {
+      icon: FaYoutube,
+      href: "https://www.youtube.com/c/YapeOficial",
+      label: "YouTube",
+    },
   ];
 
   const infoLinks = [
@@ -50,11 +70,9 @@ export default function Footer() {
 
   return (
     <footer className="relative bg-[#7e1d91] text-white">
-      
       {/* BOTÓN VOLVER ARRIBA - MÁS PEQUEÑO, ESTÁTICO Y CENTRADO */}
       {/* Usamos 'group' para animar el círculo y el icono juntos al hover */}
       <div className="absolute left-1/2 -top-10 -translate-x-1/2 z-10 flex flex-col items-center gap-2 group">
-        
         {/* Etiqueta de texto (aparece con scroll hacia arriba) */}
         <span
           className={`bg-[#18dbc1] text-white text-xs px-3 py-1 rounded-full shadow-md transition-opacity duration-300 ${
@@ -71,13 +89,15 @@ export default function Footer() {
           className="w-12 h-12 rounded-full bg-[#18dbc1] text-white flex items-center justify-center shadow-lg transition-all duration-300 ease-in-out hover:scale-110 active:scale-95"
         >
           {/* Icono más pequeño. group-hover:scale-110 hace crecer el icono también. */}
-          <FaChevronUp size={18} className="transition-transform duration-300 ease-in-out group-hover:scale-110" />
+          <FaChevronUp
+            size={18}
+            className="transition-transform duration-300 ease-in-out group-hover:scale-110"
+          />
         </button>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr_1fr]">
-          
           {/* SECCIÓN REDES */}
           <div className="space-y-4">
             <div className="space-y-2">
@@ -89,7 +109,8 @@ export default function Footer() {
               </h2>
             </div>
             <p className="max-w-md text-sm text-white/80">
-              Conecta con nosotros en redes sociales y mantente al día con nuestras últimas noticias.
+              Conecta con nosotros en redes sociales y mantente al día con
+              nuestras últimas noticias.
             </p>
             <div className="flex flex-wrap gap-3">
               {socialLinks.map(({ icon: Icon, href, label }) => (
@@ -138,13 +159,12 @@ export default function Footer() {
               Ver libro de reclamaciones
             </Link>
             <Link
-              to="/trabaja-con-nosotros"
+              to="/Productos"
               className="w-full flex justify-center border border-white/20 py-3 rounded-full hover:bg-white/20"
             >
               Trabaja con nosotros
             </Link>
           </div>
-
         </div>
       </div>
 

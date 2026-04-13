@@ -9,16 +9,15 @@ const firebaseConfig = {
   projectId: "lolaso-e3e6d",
   storageBucket: "lolaso-e3e6d.firebasestorage.app",
   messagingSenderId: "367492297009",
-  appId: "1:367492297009:web:4f06886cc0f2a5bfc74010"
+  appId: "1:367492297009:web:4f06886cc0f2a5bfc74010",
 };
-
 
 const app = initializeApp(firebaseConfig);
 
-export const db = getFirestore(app)
+export const db = getFirestore(app);
 
-export const storage = getStorage(app)
+export const storage = getStorage(app);
 
-export const auth = getAuth(app)
+export const auth = getAuth(app);
 
 export const googleProvider = new GoogleAuthProvider();
