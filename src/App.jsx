@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 
 // 1. IMPORTACIONES DE CONTEXTO (Faltaba MascotProvider)
-import { MascotProvider } from "./context/MascotContext"; 
+import { MascotProvider } from "./context/MascotContext";
 import { useAuth } from "./context/authContext";
 
 // 2. IMPORTACIÓN DEL COMPONENTE (Ruta corregida)
@@ -16,16 +16,21 @@ const Nosotros = lazy(() => import("./paginas/Nosotros"));
 const Productos = lazy(() => import("./paginas/Productos"));
 const Perfil = lazy(() => import("./paginas/Perfil"));
 const Intranet = lazy(() => import("./paginas/Intranet"));
-const LibroDeReclamaciones = lazy(() => import("./paginas/LibroDeReclamaciones"));
+const LibroDeReclamaciones = lazy(
+  () => import("./paginas/LibroDeReclamaciones"),
+);
+const FormularioDePostulacion = lazy(
+  () => import("./paginas/FormularioDePostulacion"),
+);
 
 function App() {
   return (
     /* MascotProvider debe envolver TODO */
-    <MascotProvider> 
+    <MascotProvider>
       <Suspense
         fallback={
           <div style={{ textAlign: "center", marginTop: "2rem" }}>
-            Cargando dulzura ...
+            Yo yapeo, tú yapeas, todos yapeamos ...
           </div>
         }
       >
@@ -36,13 +41,17 @@ function App() {
             <Route path="/productos" element={<Productos />} />
             <Route path="/perfil/:username" element={<Perfil />} />
             <Route path="/intranet" element={<Intranet />} />
-            <Route path="/libro-de-reclamaciones" element={<LibroDeReclamaciones />} />
+            <Route
+              path="/libro-de-reclamaciones"
+              element={<LibroDeReclamaciones />}
+            />
+            <Route path="/postular/:id" element={<FormularioDePostulacion />} />
           </Route>
         </Routes>
       </Suspense>
 
       {/* Renderizamos la mascota aquí para que sea global */}
-      <YapeMascot /> 
+      <YapeMascot />
     </MascotProvider>
   );
 }
