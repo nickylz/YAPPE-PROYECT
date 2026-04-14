@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import GestionUsuarios from "../componentes/GestionUsuarios";
 import GestionReclamos from "../componentes/GestionReclamos";
-import GestionPostulaciones from "../componentes/GestionPostulaciones"; // Importa el nuevo
+import GestionPostulaciones from "../componentes/GestionPostulaciones"; 
+import GestionSubirEmpleo from "../componentes/GestionSubirEmpleo";
+import Preguntas from "../componentes/Preguntas";
 
 export default function Intranet() {
   const { usuarioActual } = useAuth();
@@ -12,8 +14,10 @@ export default function Intranet() {
 
   // Definición de pestañas basada en roles
   const allTabs = [
-    { id: 'reclamos', label: 'Gestión de Reclamos', roles: ['admin'], component: <GestionReclamos /> },
     { id: 'usuarios', label: 'Gestión de Usuarios', roles: ['admin'], component: <GestionUsuarios /> },
+    { id: 'reclamos', label: 'Gestión de Reclamos', roles: ['admin'], component: <GestionReclamos /> },
+    { id: 'preguntas', label: 'Gestión de Preguntas', roles: ['admin'], component: <Preguntas /> },
+    { id: 'empleos', label: 'Publicar Empleos', roles: ['admin'], component: <GestionSubirEmpleo /> },
     { id: 'postulaciones', label: 'Gestión de CVs', roles: ['admin'], component: <GestionPostulaciones /> },
   ];
 

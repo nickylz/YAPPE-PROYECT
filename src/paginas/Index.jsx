@@ -148,17 +148,7 @@ export default function Inicio() {
           <div className="h-full w-full max-w-7xl mx-auto bg-white rounded-[50px] md:rounded-[100px] shadow-xl border border-[#f5bfb2]"></div>
         </div>
 
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 md:px-12">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-5xl font-extrabold text-[#9c2007]">
-              Postres Estrella
-            </h2>
-
-            <p className="text-sm md:text-lg text-gray-600 mt-3 max-w-2xl mx-auto">
-              Los postres de siempre, los que se roban todos los suspiros.
-            </p>
-          </div>
-        </div>
+        
       </section>
 
     </main>
