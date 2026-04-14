@@ -2,12 +2,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
-// HERO SLIDES
+// SLIDES
 import slide1 from "../componentes/img/slide1.png";
 import slide2 from "../componentes/img/slide2.png";
 import slide3 from "../componentes/img/slide3.png";
 import slide4 from "../componentes/img/slide4.png";
 import slide5 from "../componentes/img/slide5.png";
+
+// VIDEO
+import video from "../componentes/img/video.mp4";
 
 // TARJETAS
 import motivo1 from "../componentes/img/motivo1.png";
@@ -30,26 +33,10 @@ const slides = [
     texto: "Da tu primer paso al mundo laboral con Yape.",
     imagen: slide4,
   },
-  {
-    titulo: "Tu primer paso al mundo laboral",
-    texto: "Accede a oportunidades reales diseñadas para jóvenes.",
-    imagen: slide1,
-  },
-  {
-    titulo: "Un espacio para todos",
-    texto: "Creemos en la inclusión y el talento joven.",
-    imagen: slide3,
-  },
-  {
-    titulo: "Aprende mientras creces",
-    texto: "Desarrolla habilidades en un entorno innovador.",
-    imagen: slide2,
-  },
-  {
-    titulo: "Tu futuro empieza hoy",
-    texto: "Atrévete a dar el primer paso.",
-    imagen: slide5,
-  },
+  { titulo: "Tu primer paso al mundo laboral", texto: "Accede a oportunidades reales diseñadas para jóvenes.", imagen: slide1 },
+  { titulo: "Un espacio para todos", texto: "Creemos en la inclusión y el talento joven.", imagen: slide3 },
+  { titulo: "Aprende mientras creces", texto: "Desarrolla habilidades en un entorno innovador.", imagen: slide2 },
+  { titulo: "Tu futuro empieza hoy", texto: "Atrévete a dar el primer paso.", imagen: slide5 },
 ];
 
 const tarjetas = [
@@ -64,64 +51,69 @@ const tarjetas = [
 ];
 
 export default function Inicio() {
-  const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
-  const [activa, setActiva] = useState(null);
 
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [activa, setActiva] = useState(null);
+  const [muted, setMuted] = useState(true);
+  const [count, setCount] = useState(0);
+
+  const videoRef = useRef(null);
   const scrollRef = useRef(null);
+
   const finalNumber = 1000;
+  const digits = count.toString().padStart(4, "0").split("");
 
   // CONTADOR
   useEffect(() => {
     let start = 0;
-    const duration = 2000;
-    const increment = finalNumber / (duration / 16);
-
-    const counter = setInterval(() => {
-      start += increment;
-      if (start >= finalNumber) {
-        start = finalNumber;
-        clearInterval(counter);
-      }
-      setCount(Math.floor(start));
-    }, 16);
-
-    return () => clearInterval(counter);
-  }, []);
-
-  // HERO AUTO
-  useEffect(() => {
     const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, 4000);
+      start += 5;
+      if (start >= finalNumber) clearInterval(interval);
+      setCount(Math.min(start, finalNumber));
+    }, 30);
     return () => clearInterval(interval);
   }, []);
 
-  const nextSlide = () => {
-    setCurrent((prev) => (prev + 1) % slides.length);
-  };
+  // SLIDES AUTO
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSlideIndex((p) => (p + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const slide = slides[slideIndex];
 
   const prevSlide = () => {
-    setCurrent((prev) =>
+    setSlideIndex((prev) =>
       prev === 0 ? slides.length - 1 : prev - 1
     );
   };
 
+  const nextSlide = () => {
+    setSlideIndex((prev) =>
+      (prev + 1) % slides.length
+    );
+  };
+
+  const toggleVideo = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.paused ? v.play() : v.pause();
+  };
+
   const scrollLeft = () => {
-    scrollRef.current.scrollBy({ left: -500, behavior: "smooth" });
+    scrollRef.current?.scrollBy({ left: -500, behavior: "smooth" });
   };
 
   const scrollRight = () => {
-    scrollRef.current.scrollBy({ left: 500, behavior: "smooth" });
+    scrollRef.current?.scrollBy({ left: 500, behavior: "smooth" });
   };
-
-  const slide = slides[current];
-  const digits = count.toString().padStart(4, "0").split("");
 
   return (
     <main className="overflow-x-hidden bg-white">
 
-      {/* HERO CON FLECHAS */}
+      {/* SLIDER */}
       <section
         className="relative w-full h-[90vh] flex items-center justify-center text-center px-4"
         style={{
@@ -130,162 +122,159 @@ export default function Inicio() {
           backgroundPosition: "center",
         }}
       >
-        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="absolute inset-0 bg-black/60" />
 
-        {/* Flecha izquierda */}
+        {/* FLECHA IZQUIERDA */}
         <button
           onClick={prevSlide}
-          className="absolute left-6 top-1/2 -translate-y-1/2 z-20
-          bg-white/30 hover:bg-white/60 backdrop-blur-md
-          w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
+          className="absolute left-6 top-1/2 -translate-y-1/2 z-20 bg-white/30 w-16 h-16 rounded-full text-white text-2xl hover:scale-110 transition"
         >
           ‹
         </button>
 
-        {/* Flecha derecha */}
+        {/* FLECHA DERECHA */}
         <button
           onClick={nextSlide}
-          className="absolute right-6 top-1/2 -translate-y-1/2 z-20
-          bg-white/30 hover:bg-white/60 backdrop-blur-md
-          w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
+          className="absolute right-6 top-1/2 -translate-y-1/2 z-20 bg-white/30 w-16 h-16 rounded-full text-white text-2xl hover:scale-110 transition"
         >
           ›
         </button>
 
-        <div className="relative z-10 max-w-2xl">
-          <h1 className="text-5xl md:text-7xl font-extrabold text-white">
-            {slide.titulo}
-          </h1>
-
-          <p className="mt-6 text-lg text-white opacity-90">
-            {slide.texto}
-          </p>
+        <div className="relative z-10 max-w-3xl text-white">
+          <h1 className="text-6xl font-extrabold">{slide.titulo}</h1>
+          <p className="mt-4 text-xl">{slide.texto}</p>
 
           <Link
-            to="/productos"
-            className="inline-block mt-8 px-10 py-4 bg-[#18dbc1] text-white font-bold rounded-full hover:scale-105 transition"
+            to="/registro"
+            className="mt-6 inline-block px-10 py-4 bg-[#18dbc1] font-bold rounded-full"
           >
             Únete a nosotros
           </Link>
         </div>
       </section>
 
-      {/* MENSAJE + CONTADOR */}
-      <section className="pt-16 pb-10 text-center px-6">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+      {/* BIENVENIDA */}
+      <section className="py-28 px-6 max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+
+        <div>
+          <h2 className="text-5xl md:text-6xl font-extrabold text-gray-800">
+            Bienvenido a Yape
+          </h2>
+
+          <h3 className="text-3xl md:text-4xl text-[#18dbc1] mt-6 font-semibold">
+            Yape: oportunidades para todos
+          </h3>
+
+          <p className="mt-8 text-xl text-gray-700 leading-relaxed">
+            Descubre cómo es un día trabajando en Yape y da el primer paso hacia tu futuro laboral.
+          </p>
+
+          <p className="mt-5 text-lg text-gray-700 leading-relaxed">
+            A través de este espacio podrás conocer de cerca la experiencia real dentro de nuestro equipo: jóvenes como tú aprendiendo, creciendo y construyendo oportunidades en el mundo financiero. No necesitas experiencia, solo las ganas de empezar.
+          </p>
+
+          <p className="mt-6 text-lg font-semibold text-gray-800">
+            Mira el video, inspírate y comienza hoy tu camino con nosotros.
+          </p>
+        </div>
+
+        <div className="relative">
+          <video
+            ref={videoRef}
+            src={video}
+            muted={muted}
+            autoPlay
+            loop
+            controls
+            onClick={toggleVideo}
+            className="w-full h-[500px] object-cover rounded-3xl shadow-2xl cursor-pointer"
+          />
+        </div>
+
+      </section>
+
+      {/* CONTADOR */}
+      <section className="py-16 text-center">
+
+        <h2 className="text-4xl font-semibold text-gray-700">
           No importa de dónde vienes, importa a dónde quieres llegar
         </h2>
 
-        <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-          En Yape creemos en el talento joven 🚀
+        <h3 className="mt-6 text-2xl font-semibold">
+          Jóvenes construyendo el futuro
+        </h3>
+
+        <div className="flex justify-center gap-4 mt-6">
+          {digits.map((num, i) => (
+            <div key={i} className="w-16 h-20 flex items-center justify-center text-2xl font-bold border rounded-xl shadow">
+              {num}
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-3 text-gray-600">
+          jóvenes ya forman parte del{" "}
+          <span className="text-[#18dbc1] font-semibold">Team Yape</span>
         </p>
 
-        <div className="mt-10">
-          <h3 className="text-2xl md:text-3xl font-bold text-gray-800">
-            Jóvenes construyendo el futuro
-          </h3>
-
-          <div className="flex justify-center items-center gap-4 mt-6">
-            {digits.map((num, index) => (
-              <div
-                key={index}
-                className="w-20 h-24 flex items-center justify-center text-3xl font-bold bg-white border-2 rounded-xl shadow-lg"
-              >
-                {num}
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-3 text-gray-600">
-            jóvenes ya forman parte del{" "}
-            <span className="font-semibold text-[#18dbc1]">
-              Team Yape
-            </span>
-          </p>
-        </div>
       </section>
 
       {/* CARRUSEL */}
-      <section className="py-28 px-4 text-center">
-        <h2 className="text-5xl font-extrabold mb-16">
+      <section className="py-16 px-4 text-center">
+        <h2 className="text-4xl md:text-5xl font-extrabold mb-6">
           ¿Por qué trabajar en <span className="text-[#18dbc1]">Yape</span>?
         </h2>
 
-
-        
-
-        <p className="mt-4 text-purple-100">
+        <p className="text-gray-600">
           No esperes tener experiencia. Empieza ahora.
         </p>
 
         <Link
           to="/productos"
-          className="inline-block mt-8 px-10 py-4 bg-[#18dbc1] font-bold rounded-full hover:scale-105 transition"
+          className="inline-block mt-4 px-10 py-4 bg-[#18dbc1] font-bold rounded-full"
         >
           Postula ahora
         </Link>
 
-        <div className="relative max-w-[1600px] mx-auto">
+        <div className="relative max-w-[1600px] mx-auto mt-10">
 
-          <button
-            onClick={scrollLeft}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-20
-            bg-white/30 hover:bg-white/60 backdrop-blur-lg
-            w-16 h-16 rounded-full shadow-lg flex items-center justify-center"
-          >
+          <button onClick={scrollLeft} className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/30 w-16 h-16 rounded-full">
             ‹
           </button>
 
           <div
             ref={scrollRef}
-            className="flex gap-12 overflow-x-auto scroll-smooth px-24 no-scrollbar"
+            className="flex gap-12 overflow-x-auto px-24 scroll-smooth"
           >
             {tarjetas.map((item, index) => (
               <div key={index} className="flex-shrink-0">
                 <div
                   onClick={() => setActiva(index)}
-                  className={`
-                    w-[520px] md:w-[600px]
-                    h-[380px] md:h-[480px]
-                    relative cursor-pointer rounded-2xl overflow-hidden
-                    transition-all duration-500
-                    ${activa === index ? "scale-110 z-10" : "hover:scale-105"}
-                  `}
+                  className={`w-[520px] md:w-[600px] h-[380px] md:h-[480px] relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-500 ${
+                    activa === index ? "scale-110 z-10" : "hover:scale-105"
+                  }`}
                 >
-                  <img
-                    src={item.img}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={item.img} className="w-full h-full object-cover" />
 
-                  <div
-                    className={`absolute inset-0 flex flex-col justify-center items-center text-white text-center p-8
-                    transition-all duration-500
-                    ${
-                      activa === index
-                        ? "bg-black/70 opacity-100"
-                        : "bg-black/0 opacity-0 hover:bg-black/50 hover:opacity-100"
-                    }`}
-                  >
+                  <div className={`absolute inset-0 flex flex-col justify-center items-center text-white text-center p-8 transition-all duration-500 ${
+                    activa === index
+                      ? "bg-black/70 opacity-100"
+                      : "bg-black/0 opacity-0 hover:bg-black/50 hover:opacity-100"
+                  }`}>
                     <h3 className="font-bold text-4xl">{item.titulo}</h3>
                     <p className="text-xl mt-4">{item.desc}</p>
                   </div>
+
                 </div>
               </div>
             ))}
           </div>
 
-          <button
-            onClick={scrollRight}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-20
-            bg-white/30 hover:bg-white/60 backdrop-blur-lg
-            w-16 h-16 rounded-full shadow-lg flex items-center justify-center"
-          >
+          <button onClick={scrollRight} className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/30 w-16 h-16 rounded-full">
             ›
           </button>
 
         </div>
-
       </section>
 
     </main>
