@@ -9,7 +9,6 @@ import { useAuth } from "./context/authContext";
 import YapeMascot from "./componentes/YapeMascot/YapeMascot";
 import MainLayout from "./layouts/MainLayout";
 import "./App.css";
-import CentrodeAyuda from "./paginas/CentrodeAyuda";
 
 // PÁGINAS CON LAZY LOADING
 const Inicio = lazy(() => import("./paginas/Index"));
