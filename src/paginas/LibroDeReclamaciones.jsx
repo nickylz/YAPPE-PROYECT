@@ -1,283 +1,198 @@
 import { useState } from "react";
-import { db, storage } from "../lib/firebase";
+import { db } from "../lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { 
-  User, FileText, Camera, Send, Loader, CheckCircle2, 
-  AlertCircle, Image as ImageIcon, ArrowLeft, DollarSign
+  User, FileText, Send, Loader, CheckCircle2, 
+  ArrowLeft, MapPin, AlertCircle, MessageSquare
 } from "lucide-react";
+import { departamentos, provincias as provinciasData, distritos as distritosData } from '../lib/peru-geo';
 import toast from "react-hot-toast";
 
 export default function LibroDeReclamaciones() {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); 
   const [loading, setLoading] = useState(false);
-  const [fotos, setFotos] = useState([]);
   const [form, setForm] = useState({
     nombres: "", apellidos: "", documento: "", email: "",
     telefono: "", direccion: "", departamento: "", provincia: "", distrito: "",
-    montoReclamado: "", comentario: "", tipo: "Reclamo"
+    montoReclamado: "", comentario: "", tipo: "" 
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "montoReclamado" && value.length > 5) return;
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e) => {
-    if (e.target.files) {
-      setFotos(Array.from(e.target.files));
+    if (name === "documento") {
+      const val = value.replace(/\D/g, ""); 
+      if (val.length <= 8) setForm(prev => ({ ...prev, [name]: val }));
+      return;
     }
+    if (name === "telefono") {
+      const val = value.replace(/\D/g, ""); 
+      if (val.length <= 9) setForm(prev => ({ ...prev, [name]: val }));
+      return;
+    }
+    if (name === "departamento") setForm(prev => ({ ...prev, departamento: value, provincia: "", distrito: "" }));
+    else if (name === "provincia") setForm(prev => ({ ...prev, provincia: value, distrito: "" }));
+    else setForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (form.documento.length !== 8) return toast.error("DNI inválido (8 dígitos)");
+    if (form.telefono.length !== 9) return toast.error("Teléfono inválido (9 dígitos)");
+
     setLoading(true);
-
     try {
-      const fotoUrls = [];
-      for (const foto of fotos) {
-        const storageRef = ref(storage, `reclamos/${Date.now()}-${foto.name}`);
-        const snapshot = await uploadBytes(storageRef, foto);
-        const url = await getDownloadURL(snapshot.ref);
-        fotoUrls.push(url);
-      }
-
       await addDoc(collection(db, "reclamos"), {
         ...form,
-        montoReclamado: parseFloat(form.montoReclamado) || 0,
-        fotos: fotoUrls,
+        estado: "pendiente",
         fechaCreacion: serverTimestamp(),
-        estado: "pendiente"
       });
-
-      toast.success("¡Enviado con éxito!");
       setStep(3);
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error("Error al procesar la solicitud");
+      toast.success("Enviado correctamente");
+    } catch (err) {
+      toast.error("Error al enviar");
     } finally {
       setLoading(false);
     }
   };
 
-  // Input base con Tailwind puro
-  const inputClass = "w-full px-6 py-4 bg-white border-2 border-[#f0ebf5] rounded-[20px] text-[#3b0f52] font-semibold transition-all placeholder:text-[#6b4a88]/40 placeholder:font-normal focus:outline-none focus:border-[#00d1c4] focus:ring-4 focus:ring-[#00d1c4]/10";
+  const seleccionarTipo = (tipo) => {
+    setForm(prev => ({ ...prev, tipo }));
+    setStep(1);
+  };
 
-  if (step === 3) {
-    return (
-      <div className="min-h-screen bg-[#fcfaff] flex items-center justify-center p-6 font-sans">
-        <div className="max-w-md w-full bg-white rounded-[40px] p-12 text-center shadow-2xl border border-purple-50 animate-in zoom-in duration-500">
-          <div className="w-24 h-24 bg-[#00d1c4]/10 rounded-full flex items-center justify-center mx-auto text-[#00d1c4] mb-8">
-            <CheckCircle2 size={56} strokeWidth={3} />
-          </div>
-          <h2 className="text-3xl font-black text-[#3b0f52] mb-4">¡Listo, Yaper@!</h2>
-          <p className="text-[#6b4a88] font-medium mb-10 leading-relaxed">
-            Hemos registrado tu reclamo correctamente. Nuestro equipo lo revisará en breve.
-          </p>
-          <button 
-            onClick={() => window.location.href = "/"}
-            className="w-full bg-[#7e1d91] text-white py-4 rounded-[20px] font-black shadow-lg shadow-purple-200 hover:scale-[1.02] transition-transform"
-          >
-            Volver al Inicio
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const inputClass = "w-full px-6 md:px-7 py-4 md:py-5 rounded-[24px] bg-white border-2 border-[#ecd8ff] focus:border-[#7e1d91] outline-none font-bold text-[#3b0f52] shadow-sm transition-all placeholder:text-gray-300 text-sm md:text-base";
+  const labelClass = "block text-[10px] font-black text-[#7e1d91] uppercase tracking-[0.3em] mb-2 md:mb-3 ml-4 md:ml-6";
 
   return (
-    <div className="min-h-screen bg-[#fcfaff] pb-20 font-sans">
-      
-      {/* HERO SECTION */}
-      <div className="relative h-[450px] md:h-[550px] w-full overflow-hidden flex items-center justify-center text-center">
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center"
-          style={{ backgroundImage: `url('https://www.yape.com.pe/static/867f08c5c7d5c7b39a7b6b3e9d3d9e8c/banner-vibrayape.png')` }} 
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-[#3b0f52]/80 via-[#7e1d91]/75 to-[#fcfaff]"></div>
-        </div>
+    // Se añade pb-24 para que no choque con el footer y pt-10 para espacio arriba
+    <div className="min-h-screen bg-[#fcfaff] px-4 py-10 md:p-12 pb-24 md:pb-32">
+      <div className="max-w-4xl mx-auto">
+        
+        {/* PASO 0: SELECCIÓN DE TIPO */}
+        {step === 0 && (
+          <div className="space-y-10 md:space-y-16 animate-in fade-in zoom-in-95 duration-500">
+            <div className="text-center space-y-4">
+              <h1 className="text-4xl md:text-7xl font-black italic text-[#3b0f52] uppercase leading-tight md:leading-none tracking-tighter">
+                Libro de <br /> <span className="text-[#7e1d91]">Reclamaciones</span>
+              </h1>
+              <p className="text-gray-400 font-bold uppercase text-[9px] md:text-[11px] tracking-[0.5em]">Elige una categoría para continuar</p>
+            </div>
 
-        <div className="relative z-10 px-4 mt-[-20px]">
-          <span className="inline-block px-5 py-2 bg-[#00d1c4] text-[#3b0f52] text-[11px] font-black uppercase tracking-[0.25em] rounded-full mb-6 shadow-xl">
-            Atención al Cliente
-          </span>
-          <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter italic leading-none drop-shadow-sm">
-            Libro de <br /> Reclamaciones
-          </h1>
-          <p className="mt-8 text-white/95 max-w-2xl mx-auto text-lg md:text-xl font-medium leading-relaxed">
-            En Yape nos importa escucharte. Cuéntanos qué pasó para ayudarte a que tu vida siga fluyendo.
-          </p>
-        </div>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-4 -mt-24 relative z-20">
-        <div className="bg-white rounded-[48px] shadow-[0_40px_100px_rgba(59,15,82,0.12)] border border-purple-50 overflow-hidden">
-          
-          {step === 1 && (
-            <div className="p-12 md:p-24 text-center space-y-12">
-              <div className="space-y-4">
-                <h3 className="text-3xl md:text-4xl font-black text-[#3b0f52]">¿Deseas registrar una queja?</h3>
-                <p className="text-[#6b4a88] max-w-md mx-auto font-medium text-lg leading-relaxed">
-                  Este espacio es exclusivo para reportar inconvenientes con la calidad de nuestros servicios o productos.
-                </p>
-              </div>
-              
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <button 
-                onClick={() => setStep(2)}
-                className="group relative bg-[#fcfaff] border-2 border-[#7e1d91] p-14 rounded-[44px] w-full max-w-md hover:bg-[#7e1d91] transition-all duration-500 shadow-xl mx-auto block overflow-hidden"
+                onClick={() => seleccionarTipo("Reclamo")}
+                className="group p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] bg-white border-2 border-transparent hover:border-[#7e1d91] shadow-[0_20px_50px_rgba(126,29,145,0.05)] hover:shadow-2xl hover:shadow-purple-100 transition-all text-left"
               >
-                <div className="flex flex-col items-center gap-6 relative z-10">
-                  <div className="p-6 bg-[#7e1d91] group-hover:bg-white rounded-[30px] transition-all shadow-lg group-hover:scale-110">
-                    <AlertCircle className="text-white group-hover:text-[#7e1d91]" size={48} />
-                  </div>
-                  <span className="text-2xl font-black text-[#7e1d91] group-hover:text-white uppercase tracking-widest">
-                    Empezar Registro
-                  </span>
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-[#fcfaff] group-hover:bg-[#7e1d91] rounded-[20px] md:rounded-3xl flex items-center justify-center text-[#7e1d91] group-hover:text-white transition-all mb-6">
+                  <AlertCircle size={32} />
                 </div>
+                <h3 className="text-xl md:text-2xl font-black italic text-[#3b0f52] uppercase">Reclamo</h3>
+                <p className="text-xs md:text-sm text-gray-400 font-bold leading-relaxed mt-2 uppercase tracking-tight">Inconformidad por el producto adquirido</p>
+              </button>
+
+              <button 
+                onClick={() => seleccionarTipo("Queja")}
+                className="group p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] bg-white border-2 border-transparent hover:border-[#7e1d91] shadow-[0_20px_50px_rgba(126,29,145,0.05)] hover:shadow-2xl hover:shadow-purple-100 transition-all text-left"
+              >
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-[#fcfaff] group-hover:bg-[#7e1d91] rounded-[20px] md:rounded-3xl flex items-center justify-center text-[#7e1d91] group-hover:text-white transition-all mb-6">
+                  <MessageSquare size={32} />
+                </div>
+                <h3 className="text-xl md:text-2xl font-black italic text-[#3b0f52] uppercase">Queja</h3>
+                <p className="text-xs md:text-sm text-gray-400 font-bold leading-relaxed mt-2 uppercase tracking-tight">Descontento respecto a la atención</p>
               </button>
             </div>
-          )}
+          </div>
+        )}
 
-          {step === 2 && (
-            <form onSubmit={handleSubmit} className="p-8 md:p-20 space-y-20 animate-in slide-in-from-bottom-10 duration-700">
-              
-              {/* Sección 1: Datos Personales */}
-              <div className="space-y-10">
-                <div className="flex items-center gap-6">
-                  <div className="p-5 bg-[#7e1d91] rounded-[24px] text-white shadow-lg shadow-purple-100">
-                     <User size={32} strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-black text-[#3b0f52]">1. Tus Datos</h3>
-                    <p className="text-[10px] text-[#00d1c4] font-black uppercase tracking-[0.2em]">Información personal</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Nombres</label>
-                    <input name="nombres" placeholder="Ej. Juan Diego" required className={inputClass} onChange={handleChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Apellidos</label>
-                    <input name="apellidos" placeholder="Ej. Pérez" required className={inputClass} onChange={handleChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Documento (DNI/RUC)</label>
-                    <input name="documento" placeholder="Número de ID" required className={inputClass} onChange={handleChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Email</label>
-                    <input name="email" type="email" placeholder="correo@ejemplo.com" required className={inputClass} onChange={handleChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Celular</label>
-                    <input name="telefono" placeholder="999 999 999" required className={inputClass} onChange={handleChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Dirección</label>
-                    <input name="direccion" placeholder="Calle / Av / Jr" required className={inputClass} onChange={handleChange} />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-[#fcfaff] p-8 rounded-[32px] border border-[#f0ebf5]">
-                  <input name="departamento" placeholder="Departamento" className={inputClass} onChange={handleChange} />
-                  <input name="provincia" placeholder="Provincia" className={inputClass} onChange={handleChange} />
-                  <input name="distrito" placeholder="Distrito" className={inputClass} onChange={handleChange} />
-                </div>
-              </div>
-
-              {/* Sección 2: El Reclamo */}
-              <div className="space-y-10">
-                <div className="flex items-center gap-6">
-                  <div className="p-5 bg-[#00d1c4] rounded-[24px] text-[#3b0f52] shadow-lg shadow-cyan-50">
-                     <FileText size={32} strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-black text-[#3b0f52]">2. El Reclamo</h3>
-                    <p className="text-[10px] text-[#7e1d91] font-black uppercase tracking-[0.2em]">Detalle del incidente</p>
-                  </div>
-                </div>
-
-                <div className="space-y-8">
-                  <div className="max-w-xs space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Monto reclamado (S/)</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-6 flex items-center text-[#7e1d91] font-black">S/</div>
-                      <input 
-                        name="montoReclamado" 
-                        type="number"
-                        value={form.montoReclamado}
-                        placeholder="0.00" 
-                        className={`${inputClass} pl-14`} 
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Descripción de los hechos</label>
-                    <textarea 
-                      name="comentario" 
-                      placeholder="Explícanos detalladamente qué sucedió..." 
-                      required 
-                      className={`${inputClass} h-52 resize-none pt-6 leading-relaxed`}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Sección 3: Evidencias */}
-              <div className="space-y-10">
-                <div className="flex items-center gap-6">
-                  <div className="p-5 bg-white rounded-[24px] text-[#7e1d91] border-2 border-[#f0ebf5]">
-                     <Camera size={32} strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-black text-[#3b0f52]">3. Evidencias</h3>
-                    <p className="text-[10px] text-[#6b4a88]/60 font-black uppercase tracking-[0.2em]">Adjunta fotos o capturas</p>
-                  </div>
-                </div>
-
-                <div className="relative group">
-                  <input 
-                    type="file" multiple accept="image/*"
-                    onChange={handleFileChange}
-                    className="absolute inset-0 opacity-0 cursor-pointer z-20"
-                  />
-                  <div className="border-4 border-dashed border-[#f0ebf5] rounded-[48px] p-16 text-center group-hover:bg-[#fcfaff] group-hover:border-[#7e1d91]/20 transition-all duration-300">
-                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm mb-6 group-hover:scale-110 transition-transform duration-500">
-                      <ImageIcon size={40} className="text-[#7e1d91]" />
-                    </div>
-                    <p className="text-[#3b0f52] font-black text-2xl">
-                      {fotos.length > 0 ? `¡${fotos.length} fotos listas!` : "Subir archivos"}
-                    </p>
-                    <p className="text-[#6b4a88] font-medium mt-3">Arrastra tus fotos o haz clic aquí</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Botones */}
-              <div className="flex flex-col md:flex-row gap-6 pt-12 border-t border-[#f0ebf5]">
-                <button 
-                  type="button" 
-                  onClick={() => setStep(1)}
-                  className="flex items-center justify-center gap-3 px-12 py-5 rounded-[24px] font-black text-[#7e1d91] bg-[#fcfaff] hover:bg-purple-100 transition-all uppercase text-xs tracking-widest"
-                >
-                  <ArrowLeft size={18} strokeWidth={3} /> Volver
+        {/* PASO 1: DATOS PERSONALES */}
+        {step === 1 && (
+          <div className="space-y-8 md:space-y-10 animate-in slide-in-from-bottom-10 duration-500">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+              <div>
+                <button onClick={() => setStep(0)} className="flex items-center gap-2 text-[#7e1d91] font-black uppercase text-[10px] tracking-widest mb-4 md:mb-6">
+                  <ArrowLeft size={16} strokeWidth={3} /> Regresar
                 </button>
-                <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="flex-1 bg-[#7e1d91] text-white py-5 rounded-[24px] font-black text-lg shadow-2xl shadow-purple-200 hover:bg-[#3b0f52] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50"
-                >
-                  {loading ? <Loader className="animate-spin" /> : <><Send size={24} strokeWidth={3} /> ENVIAR RECLAMO</>}
-                </button>
+                <h2 className="text-3xl md:text-4xl font-black italic text-[#3b0f52] uppercase tracking-tighter">Tus Datos</h2>
               </div>
-            </form>
-          )}
-        </div>
+              <span className="hidden md:block text-4xl font-black text-[#7e1d91]/10 uppercase">Paso 01</span>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div><label className={labelClass}>Nombres</label><input name="nombres" value={form.nombres} onChange={handleChange} className={inputClass} required /></div>
+              <div><label className={labelClass}>Apellidos</label><input name="apellidos" value={form.apellidos} onChange={handleChange} className={inputClass} required /></div>
+              <div><label className={labelClass}>DNI</label><input name="documento" value={form.documento} onChange={handleChange} className={inputClass} maxLength={8} required /></div>
+              <div><label className={labelClass}>Celular</label><input name="telefono" value={form.telefono} onChange={handleChange} className={inputClass} maxLength={9} required /></div>
+              <div className="md:col-span-2"><label className={labelClass}>E-mail de contacto</label><input type="email" name="email" value={form.email} onChange={handleChange} className={inputClass} required /></div>
+            </div>
+
+            <button type="button" onClick={() => setStep(2)} className="w-full md:w-auto md:float-right bg-[#7e1d91] text-white px-16 py-5 md:py-6 rounded-[24px] md:rounded-[30px] font-black uppercase italic tracking-widest shadow-2xl shadow-purple-200 hover:scale-105 transition-all">Siguiente Paso</button>
+          </div>
+        )}
+
+        {/* PASO 2: UBICACIÓN Y DETALLE */}
+        {step === 2 && (
+          <div className="space-y-8 md:space-y-10 animate-in slide-in-from-bottom-10 duration-500">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+              <div>
+                <button onClick={() => setStep(1)} className="flex items-center gap-2 text-[#7e1d91] font-black uppercase text-[10px] tracking-widest mb-4 md:mb-6">
+                  <ArrowLeft size={16} strokeWidth={3} /> Paso Anterior
+                </button>
+                <h2 className="text-3xl md:text-4xl font-black italic text-[#3b0f52] uppercase tracking-tighter">Detalle Final</h2>
+              </div>
+              <span className="hidden md:block text-4xl font-black text-[#7e1d91]/10 uppercase">Paso 02</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              <div>
+                <label className={labelClass}>Departamento</label>
+                <select name="departamento" value={form.departamento} onChange={handleChange} className={inputClass} required>
+                  <option value="">Seleccionar</option>
+                  {departamentos.map(d => <option key={d.id} value={d.id}>{d.nombre}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className={labelClass}>Provincia</label>
+                <select name="provincia" value={form.provincia} onChange={handleChange} className={inputClass} required disabled={!form.departamento}>
+                  <option value="">Provincia</option>
+                  {(provinciasData[form.departamento] || []).map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className={labelClass}>Distrito</label>
+                <select name="distrito" value={form.distrito} onChange={handleChange} className={inputClass} required disabled={!form.provincia}>
+                  <option value="">Distrito</option>
+                  {(distritosData[form.provincia] || []).map(dis => <option key={dis.id} value={dis.id}>{dis.nombre}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div><label className={labelClass}>Dirección Actual</label><input name="direccion" value={form.direccion} onChange={handleChange} className={inputClass} required /></div>
+            
+            <div>
+              <label className={labelClass}>¿Qué sucedió?</label>
+              <textarea name="comentario" value={form.comentario} onChange={handleChange} className={`${inputClass} h-48 md:h-52 resize-none pt-6`} required placeholder="Describe tu experiencia..." />
+            </div>
+
+            <button onClick={handleSubmit} disabled={loading} className="w-full bg-[#3b0f52] text-white py-5 md:py-6 rounded-[24px] md:rounded-[30px] font-black text-xl shadow-2xl hover:bg-[#7e1d91] transition-all flex items-center justify-center gap-4">
+              {loading ? <Loader className="animate-spin" /> : <><Send size={22} /> Enviar {form.tipo}</>}
+            </button>
+          </div>
+        )}
+
+        {/* PASO 3: ÉXITO */}
+        {step === 3 && (
+          <div className="py-20 text-center space-y-8 animate-in zoom-in-95">
+            <div className="w-28 h-28 md:w-32 md:h-32 bg-white text-emerald-500 rounded-[35px] md:rounded-[40px] flex items-center justify-center mx-auto shadow-2xl shadow-emerald-100 border-2 border-emerald-50">
+              <CheckCircle2 size={50} md:size={60} />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-4xl md:text-5xl font-black italic text-[#3b0f52] uppercase tracking-tighter">¡Listo!</h2>
+              <p className="text-gray-400 font-bold uppercase text-[10px] md:text-xs tracking-[0.3em]">Hemos recibido tu mensaje</p>
+            </div>
+            <button onClick={() => window.location.reload()} className="px-12 md:px-16 py-5 md:py-6 bg-[#7e1d91] text-white rounded-[24px] md:rounded-[30px] font-black uppercase italic shadow-xl hover:scale-105 transition-transform">Volver</button>
+          </div>
+        )}
+
       </div>
     </div>
   );
