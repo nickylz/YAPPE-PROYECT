@@ -100,7 +100,6 @@ export default function Productos() {
                   key={job.id}
                   className="group bg-white rounded-[40px] p-8 shadow-sm hover:shadow-[0_30px_60px_rgba(59,15,82,0.1)] border border-purple-50 transition-all duration-500 flex flex-col h-full relative overflow-hidden"
                 >
-                  {/* Decoración sutil al hover */}
                   <div className="absolute top-0 right-0 w-32 h-32 bg-[#00d1c4]/5 rounded-bl-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-700"></div>
 
                   <div className="relative z-10 flex flex-col h-full">
@@ -133,8 +132,9 @@ export default function Productos() {
                     </p>
 
                     <div className="mt-auto pt-6 border-t border-purple-50 flex items-center justify-between">
+                      {/* VINCULACIÓN A VER DETALLES */}
                       <Link
-                        to={`/postular/${job.id}`}
+                        to={`/detalles-empleo/${job.id}`}
                         className="flex items-center gap-2 text-[#7e1d91] font-black uppercase text-xs tracking-widest group/btn"
                       >
                         Ver detalles 
@@ -142,7 +142,7 @@ export default function Productos() {
                       </Link>
                       
                       <Link
-                        to={`/postular/${job.id}`}
+                        to={`/detalles-empleo/${job.id}`}
                         className="bg-[#00d1c4] text-[#3b0f52] px-6 py-3 rounded-[18px] font-black text-xs uppercase hover:bg-[#3b0f52] hover:text-white transition-all shadow-lg shadow-cyan-100"
                       >
                         Postular

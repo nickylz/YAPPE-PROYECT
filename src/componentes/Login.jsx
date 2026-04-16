@@ -109,7 +109,7 @@ export default function Login({ isScrolled = false }) {
         <div className="flex items-center gap-3">
           <Link
             to={`/perfil/${usernameMostrado}`}
-            className={`flex items-center gap-3 rounded-[24px] px-4 py-2 transition-all duration-300 ${isScrolled ? 'bg-[#7e1d91]/5 shadow-sm border border-[#7e1d91]/10' : 'bg-white/10 hover:bg-white/20'
+            className={`flex items-center gap-3 rounded-3xl px-4 py-2 transition-all duration-300 ${isScrolled ? 'bg-[#7e1d91]/5 shadow-sm border border-[#7e1d91]/10' : 'bg-white/10 hover:bg-white/20'
               }`}
           >
             <Avatar user={usuarioActual} className="w-9 h-9 border-2 border-white shadow-sm" />
@@ -174,7 +174,7 @@ export default function Login({ isScrolled = false }) {
             <div className="flex flex-col gap-4 pt-4">
               <button
                 type="submit"
-                className="w-full bg-[#7e1d91] text-white py-5 rounded-[24px] font-black uppercase italic tracking-widest shadow-xl shadow-purple-200 hover:bg-[#3b0f52] hover:scale-[1.02] active:scale-95 transition-all"
+                className="w-full bg-[#7e1d91] text-white py-5 rounded-3xl font-black uppercase italic tracking-widest shadow-xl shadow-purple-200 hover:bg-[#3b0f52] hover:scale-[1.02] active:scale-95 transition-all"
               >
                 ENTRAR AHORA
               </button>
@@ -182,7 +182,7 @@ export default function Login({ isScrolled = false }) {
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                className="w-full flex items-center justify-center gap-3 bg-white border-2 border-[#f0ebf5] text-[#3b0f52] py-4 rounded-[24px] font-black uppercase italic text-xs tracking-widest hover:bg-[#fcfaff] transition-all"
+                className="w-full flex items-center justify-center gap-3 bg-white border-2 border-[#f0ebf5] text-[#3b0f52] py-4 rounded-3xl font-black uppercase italic text-xs tracking-widest hover:bg-[#fcfaff] transition-all"
               >
                 <FcGoogle size={24} /> Entrar con Google
               </button>
@@ -273,7 +273,7 @@ export default function Login({ isScrolled = false }) {
               </div>
             </div>
 
-            <div className="bg-[#fcfaff] p-6 rounded-[32px] border-2 border-dashed border-[#f0ebf5] space-y-3">
+            <div className="bg-[#fcfaff] p-6 rounded-4xl border-2 border-dashed border-[#f0ebf5] space-y-3">
               <label className={labelClass}>Link de Foto de Perfil</label>
               <div className="relative">
                 <FaLink className="absolute left-6 top-1/2 -translate-y-1/2 text-[#00d1c4]" />
@@ -293,7 +293,7 @@ export default function Login({ isScrolled = false }) {
             <div className="flex flex-col gap-4 pt-4">
               <button
                 type="submit"
-                className="w-full bg-[#7e1d91] text-white py-5 rounded-[24px] font-black uppercase italic tracking-widest shadow-xl shadow-purple-200 hover:bg-[#3b0f52] hover:scale-[1.02] active:scale-95 transition-all"
+                className="w-full bg-[#7e1d91] text-white py-5 rounded-3xl font-black uppercase italic tracking-widest shadow-xl shadow-purple-200 hover:bg-[#3b0f52] hover:scale-[1.02] active:scale-95 transition-all"
               >
                 CREAR MI CUENTA
               </button>

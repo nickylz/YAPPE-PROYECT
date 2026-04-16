@@ -166,7 +166,7 @@ export default function NavBar() {
 
       {/* MENÚ MÓVIL FULL SCREEN */}
       <div
-        className={`fixed inset-0 bg-white z-[60] transform transition-transform duration-500 ease-in-out ${menuOpen ? "translate-y-0" : "-translate-y-full"
+        className={`fixed inset-0 bg-white z-60 transform transition-transform duration-500 ease-in-out ${menuOpen ? "translate-y-0" : "-translate-y-full"
           } lg:hidden flex flex-col`}
       >
         <div className="p-4 flex justify-between items-center border-b border-slate-100">

@@ -210,7 +210,7 @@ export default function GestionUsuarios() {
             {/* MOBILE: TARJETAS VERTICALES (Arreglo de Responsive) */}
             <div className="md:hidden p-4 space-y-4">
               {paginatedUsers.map((usuario) => (
-                <div key={usuario.id} className="bg-[#fcfaff] rounded-[2rem] border border-[#ecd8ff]/40 p-5 shadow-sm relative overflow-hidden">
+                <div key={usuario.id} className="bg-[#fcfaff] rounded-4xl border border-[#ecd8ff]/40 p-5 shadow-sm relative overflow-hidden">
                   <div className="flex items-center gap-4 mb-4">
                     <Avatar usuario={usuario} className="w-14 h-14" />
                     <div className="flex-1 min-w-0">

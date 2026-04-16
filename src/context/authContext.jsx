@@ -214,7 +214,7 @@ export const AuthProvider = ({ children }) => {
           toast.custom(
             (t) => (
               <div
-                className={`${t.visible ? "animate-enter" : "animate-leave"} relative max-w-sm w-full bg-gradient-to-r from-[#7e1d91] via-[#9f53c1] to-[#bd6fe4] shadow-2xl rounded-3xl pointer-events-auto ring-1 ring-white/10 overflow-hidden`}
+                className={`${t.visible ? "animate-enter" : "animate-leave"} relative max-w-sm w-full bg-gradient-to from-[#7e1d91] via-[#9f53c1] to-[#bd6fe4] shadow-2xl rounded-3xl pointer-events-auto ring-1 ring-white/10 overflow-hidden`}
               >
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.28),_transparent_45%)] pointer-events-none" />
                 <button

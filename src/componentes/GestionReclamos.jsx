@@ -49,11 +49,11 @@ const ReclamoDetailModal = ({
                 <FileText size={14} /> Datos del Registro
               </h3>
               <div className="space-y-3">
-                <div className="bg-[#fcfaff] p-5 rounded-[2rem] border border-[#ecd8ff]">
+                <div className="bg-[#fcfaff] p-5 rounded-4xl border border-[#ecd8ff]">
                    <p className="text-[9px] font-black text-[#7e1d91]/40 uppercase tracking-widest">Remitente</p>
                    <p className="text-sm text-[#3b0f52] font-black uppercase italic">{reclamo.nombres} {reclamo.apellidos}</p>
                 </div>
-                <div className="bg-[#fcfaff] p-5 rounded-[2rem] border border-[#ecd8ff]">
+                <div className="bg-[#fcfaff] p-5 rounded-4xl border border-[#ecd8ff]">
                    <p className="text-[9px] font-black text-[#7e1d91]/40 uppercase tracking-widest">Contacto</p>
                    <p className="text-sm text-[#3b0f52] font-bold lowercase">{reclamo.correo}</p>
                 </div>
@@ -92,14 +92,14 @@ const ReclamoDetailModal = ({
                 <textarea 
                   value={respuesta}
                   onChange={(e) => setRespuesta(e.target.value)}
-                  className="w-full h-40 bg-[#fcfaff] border-2 border-[#ecd8ff] rounded-[2rem] p-6 text-sm focus:outline-none focus:border-[#7e1d91] transition-all resize-none font-bold text-[#3b0f52]"
+                  className="w-full h-40 bg-[#fcfaff] border-2 border-[#ecd8ff] rounded-4xl p-6 text-sm focus:outline-none focus:border-[#7e1d91] transition-all resize-none font-bold text-[#3b0f52]"
                   placeholder="Escribe aquí la solución..."
                   required
                 />
                 <button 
                   type="submit"
                   disabled={enviando}
-                  className="w-full bg-[#7e1d91] text-white py-5 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-lg hover:bg-[#3b0f52] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                  className="w-full bg-[#7e1d91] text-white py-5 rounded-4xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg hover:bg-[#3b0f52] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
                   {enviando ? <Loader className="animate-spin" size={20} /> : <><Send size={16} /> Guardar Cambios</>}
                 </button>

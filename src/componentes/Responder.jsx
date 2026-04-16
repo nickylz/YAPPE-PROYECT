@@ -160,7 +160,7 @@ export default function Responder() {
                       <Briefcase size={22} className="md:w-7 md:h-7" />
                     </div>
                   )}
-                  <h4 className={`font-black text-[#3b0f52] italic uppercase tracking-tighter leading-tight break-words flex-1 ${activeTab === 'empleo' ? 'text-2xl md:text-4xl' : 'text-xl md:text-3xl'}`}>
+                  <h4 className={`font-black text-[#3b0f52] italic uppercase tracking-tighter leading-tight wrap-break-words flex-1 ${activeTab === 'empleo' ? 'text-2xl md:text-4xl' : 'text-xl md:text-3xl'}`}>
                     {activeTab === 'reclamos' ? (item.tipo || 'Consulta') : (vacantes[item.vacanteId] || 'Posición')}
                   </h4>
                 </div>
