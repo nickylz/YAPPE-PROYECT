@@ -178,12 +178,7 @@ export default function CentrodeAyuda() {
             </div>
             <h2 className="text-2xl font-black text-[#3b0f52] mb-4 tracking-tighter">¡Identifícate!</h2>
             <p className="text-gray-500 mb-8 font-medium">Debes iniciar sesión para enviar preguntas y recibir respuestas personalizadas.</p>
-            <button
-              onClick={() => navigate('/login')}
-              className="w-full bg-[#7e1d91] text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-[#3b0f52] transition-colors shadow-lg shadow-purple-200"
-            >
-              Inicia Sesión / Regístrate
-            </button>
+          
           </div>
         </div>
       )}

@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/authContext";
 import { format } from 'date-fns';
-import { Edit2, Loader, Link as LinkIcon, CheckCircle2, User, ChevronDown, ChevronUp } from 'lucide-react';
-import toast from "react-hot-toast";
+import { Edit2, Loader, Link as LinkIcon, User, ChevronUp, CheckCircle2 } from 'lucide-react';
 
-// --- Lógica de Iniciales ---
 const getInitials = (name) => {
     if (!name) return "?";
     const words = name.split(' ');
@@ -13,14 +11,14 @@ const getInitials = (name) => {
 
 export default function PerfilForm() {
   const { usuarioActual, actualizarPerfil, cargando: cargandoAuth } = useAuth();
-
   const [nombre, setNombre] = useState('');
   const [username, setUsername] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Estado para el panel desplegable de la foto
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [nuevoLinkFoto, setNuevoLinkFoto] = useState('');
+
+  // Validación de formatos (solo permitimos estos)
+  const formatosValidos = /\.(png|jpg|gif)$/i;
 
   useEffect(() => {
     if (usuarioActual) {
@@ -35,23 +33,30 @@ export default function PerfilForm() {
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
+      // Solo llamamos a la función, las notis vienen del context/modal
       await actualizarPerfil({ nombre, username });
-      toast.success("Perfil actualizado");
     } catch (error) {
-      console.error(error);
+      console.error("Error al actualizar datos:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleCambiarFotoPorLink = async () => {
-    if (!nuevoLinkFoto) return toast.error("Pega un link primero");
+    if (!nuevoLinkFoto) return;
+    
+    // Validación local antes de enviar
+    if (!formatosValidos.test(nuevoLinkFoto)) {
+      alert("Formato no válido. Usa: .png, .jpg  o .gif");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await actualizarPerfil({ nombre, username, fotoURL_nueva: nuevoLinkFoto });
       setShowLinkInput(false);
     } catch (error) {
-      toast.error("Error al actualizar foto");
+      console.error("Error al actualizar foto:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -69,14 +74,13 @@ export default function PerfilForm() {
     ? format(usuarioActual.fechaCreacion.toDate(), 'dd/MM/yyyy') 
     : 'Reciente';
 
-  // Clases compartidas
   const inputClass = "w-full px-6 py-4 bg-[#f8f9fa] border-2 border-[#e9ecef] rounded-[22px] focus:outline-none focus:border-[#7e1d91] transition-all font-semibold text-[#3b0f52]";
   const labelClass = "text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4 mb-2 block";
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      {/* CARD DE IDENTIDAD SUPERIOR */}
-      <div className="bg-white rounded-[45px] shadow-[0_20px_60px_rgba(0,0,0,0.05)] p-10 mb-8 border border-gray-100 overflow-hidden">
+      {/* CARD DE IDENTIDAD */}
+      <div className="bg-white rounded-[45px] shadow-[0_20px_60px_rgba(0,0,0,0.05)] p-10 mb-8 border border-gray-100 relative overflow-hidden">
         <div className="flex flex-col sm:flex-row items-center gap-8">
           <div className="relative">
             <div className="w-36 h-36 rounded-[40px] overflow-hidden border-4 border-white shadow-2xl bg-gray-50 flex items-center justify-center">
@@ -99,27 +103,24 @@ export default function PerfilForm() {
               {usuarioActual.username}
             </h2>
             <div className="flex flex-wrap justify-center sm:justify-start gap-3">
-              <span className="bg-[#fcfaff] text-[#7e1d91] text-[10px] font-black px-4 py-2 rounded-xl border border-purple-50 uppercase tracking-widest">
-                Miembro desde: {fechaFormateada}
-              </span>
-              <span className="bg-gray-50 text-gray-400 text-[10px] font-black px-4 py-2 rounded-xl border border-gray-100 uppercase tracking-widest">
-                ID: {usuarioActual.uid.substring(0, 8)}
+              <span className="bg-[#fcfaff] text-[#7e1d91] text-[10px] font-black px-4 py-2 rounded-xl border border-purple-50 uppercase tracking-widest flex items-center gap-2">
+                <CheckCircle2 size={12} className="text-[#00d1c4]" /> Miembro desde: {fechaFormateada}
               </span>
             </div>
           </div>
         </div>
 
-        {/* PANEL DESPLEGABLE PARA EL LINK (HACIA ABAJO) */}
+        {/* PANEL PARA EL LINK */}
         <div className={`transition-all duration-500 ease-in-out overflow-hidden ${showLinkInput ? 'max-h-64 mt-10 opacity-100' : 'max-h-0 opacity-0'}`}>
             <div className="bg-[#fcfaff] p-8 rounded-[35px] border-2 border-dashed border-purple-100">
                 <div className="flex flex-col md:flex-row items-end gap-4">
                     <div className="flex-1 w-full text-left">
-                        <label className={labelClass}>Pegar Link de Imagen</label>
+                        <label className={labelClass}>Link de Imagen (png, jpg, gif)</label>
                         <div className="relative">
                             <LinkIcon className="absolute left-5 top-1/2 -translate-y-1/2 text-[#7e1d91] opacity-40" size={18} />
                             <input 
                                 type="url" 
-                                placeholder="https://..."
+                                placeholder="https://ejemplo.com/foto.png"
                                 className={`${inputClass} pl-12 bg-white`}
                                 value={nuevoLinkFoto}
                                 onChange={(e) => setNuevoLinkFoto(e.target.value)}
@@ -129,7 +130,7 @@ export default function PerfilForm() {
                     <button 
                         onClick={handleCambiarFotoPorLink}
                         disabled={isSubmitting}
-                        className="bg-[#00d1c4] text-[#3b0f52] px-8 py-4 rounded-[20px] font-black uppercase italic text-xs tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-cyan-100"
+                        className="bg-[#00d1c4] text-[#3b0f52] px-8 py-4 rounded-[20px] font-black uppercase italic text-xs tracking-widest hover:scale-105 transition-all shadow-lg active:scale-95"
                     >
                         {isSubmitting ? <Loader className="animate-spin" size={18} /> : "Actualizar"}
                     </button>
@@ -141,7 +142,7 @@ export default function PerfilForm() {
       {/* FORMULARIO DE DATOS */}
       <div className="bg-white rounded-[45px] p-10 border border-gray-100 shadow-sm">
         <div className="mb-10 flex items-center gap-4">
-          <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-[#7e1d91] border border-gray-100">
+          <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-[#7e1d91]">
             <User size={24} />
           </div>
           <h3 className="text-2xl font-black text-[#3b0f52] uppercase italic tracking-tight">Datos de Cuenta</h3>
@@ -152,31 +153,19 @@ export default function PerfilForm() {
             <label className={labelClass}>Nombre Completo</label>
             <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className={inputClass} />
           </div>
-
           <div className="space-y-1">
             <label className={labelClass}>Username</label>
             <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className={inputClass} />
           </div>
-
-          <div className="md:col-span-2 space-y-1 opacity-50">
-            <label className={labelClass}>Correo (Solo Lectura)</label>
-            <input type="email" value={usuarioActual.correo} disabled className={`${inputClass} bg-gray-50 cursor-not-allowed`} />
-          </div>
-
           <button 
             type="submit" 
             disabled={isSubmitting}
-            className="md:col-span-2 w-full bg-[#7e1d91] text-white py-5 rounded-[25px] font-black uppercase italic tracking-widest hover:bg-[#3b0f52] shadow-2xl shadow-purple-100 transition-all flex items-center justify-center gap-3 active:scale-95"
+            className="md:col-span-2 w-full bg-[#7e1d91] text-white py-5 rounded-[25px] font-black uppercase italic tracking-widest hover:bg-[#3b0f52] transition-all flex items-center justify-center gap-3 active:scale-95 shadow-xl shadow-purple-100"
           >
             {isSubmitting ? <Loader className="animate-spin" /> : "Actualizar Información"}
           </button>
         </form>
       </div>
-
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e9ecef; border-radius: 10px; }
-      `}</style>
     </div>
   );
 }

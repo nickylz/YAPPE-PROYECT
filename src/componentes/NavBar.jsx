@@ -103,16 +103,6 @@ export default function NavBar() {
               >
                 Únete a Yape
               </Link>
-
-              <Link
-                to="/CentrodeAyuda"
-                className={`${isWhite
-                  ? "text-[#42346c] hover:bg-slate-100"
-                  : "text-white hover:bg-white/20"
-                  } font-semibold px-3 py-1.5 rounded-full transition`}
-              >
-                Centro de Ayuda
-              </Link>
               <Link
                 to="/nosotros"
                 className={`${isWhite
@@ -122,6 +112,16 @@ export default function NavBar() {
               >
                 Sobre Nosotros
               </Link>
+              <Link
+                to="/CentrodeAyuda"
+                className={`${isWhite
+                  ? "text-[#42346c] hover:bg-slate-100"
+                  : "text-white hover:bg-white/20"
+                  } font-semibold px-3 py-1.5 rounded-full transition`}
+              >
+                Centro de Ayuda
+              </Link>
+              
             </nav>
           </div>
 
