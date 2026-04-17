@@ -182,7 +182,7 @@ export default function CentrodeAyuda() {
               onClick={() => navigate('/login')}
               className="w-full bg-[#7e1d91] text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-[#3b0f52] transition-colors shadow-lg shadow-purple-200"
             >
-              Ir al Login
+              Inicia Sesión / Regístrate
             </button>
           </div>
         </div>

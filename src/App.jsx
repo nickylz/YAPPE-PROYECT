@@ -9,6 +9,7 @@ import { useAuth } from "./context/authContext";
 import YapeMascot from "./componentes/YapeMascot/YapeMascot";
 import MainLayout from "./layouts/MainLayout";
 import "./App.css";
+import Login from './componentes/Login';
 
 // PÁGINAS CON LAZY LOADING
 const Inicio = lazy(() => import("./paginas/Index"));
@@ -44,13 +45,14 @@ function App() {
             <Route path="/" element={<Inicio />} />
             <Route path="/nosotros" element={<Nosotros />} />
             <Route path="/centrodeayuda" element={<CentrodeAyuda />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/productos" element={<Productos />} />
             <Route path="/perfil/:username" element={<Perfil />} />
             <Route path="/libro-de-reclamaciones" element={<LibroDeReclamaciones />} />
+            
 
             {/* RUTA VINCULADA */}
             <Route path="/detalles-empleo/:id" element={<VerDetalles />} />
-            
             <Route path="/postular/:id" element={<FormularioDePostulacion />} />
           </Route>
         </Routes>
