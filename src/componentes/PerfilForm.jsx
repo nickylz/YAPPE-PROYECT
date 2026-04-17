@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/authContext";
 import { format } from 'date-fns';
-import { Edit2, Loader, Link as LinkIcon, User, ChevronUp } from 'lucide-react';
-import toast from "react-hot-toast";
+import { Edit2, Loader, Link as LinkIcon, User, ChevronUp, CheckCircle2 } from 'lucide-react';
 
 const getInitials = (name) => {
     if (!name) return "?";
@@ -18,8 +17,8 @@ export default function PerfilForm() {
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [nuevoLinkFoto, setNuevoLinkFoto] = useState('');
 
-  // Expresión regular para validar solo png, jpg, jpeg y gif
-  const formatosValidos = /.(png|jpg|jpeg|gif)$/i;
+  // Validación de formatos (solo permitimos estos)
+  const formatosValidos = /\.(png|jpg|gif)$/i;
 
   useEffect(() => {
     if (usuarioActual) {
@@ -34,32 +33,30 @@ export default function PerfilForm() {
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
+      // Solo llamamos a la función, las notis vienen del context/modal
       await actualizarPerfil({ nombre, username });
-      // Notificación de éxito al editar perfil
-      toast.success("¡Éxito! Tu perfil ha sido actualizado correctamente."); 
     } catch (error) {
-      toast.error("Error al actualizar los datos");
+      console.error("Error al actualizar datos:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleCambiarFotoPorLink = async () => {
-    if (!nuevoLinkFoto) return toast.error("Pega un link primero");
+    if (!nuevoLinkFoto) return;
     
-    // VALIDACIÓN DE FORMATO
+    // Validación local antes de enviar
     if (!formatosValidos.test(nuevoLinkFoto)) {
-      return toast.error("Solo se aceptan links de imágenes (png, jpg, jpeg, gif)");
+      alert("Formato no válido. Usa: .png, .jpg  o .gif");
+      return;
     }
 
     setIsSubmitting(true);
     try {
       await actualizarPerfil({ nombre, username, fotoURL_nueva: nuevoLinkFoto });
       setShowLinkInput(false);
-      // Notificación de éxito al cambiar foto
-      toast.success("¡Éxito! Tu foto de perfil ha sido actualizada.");
     } catch (error) {
-      toast.error("Error al actualizar foto");
+      console.error("Error al actualizar foto:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -83,7 +80,7 @@ export default function PerfilForm() {
   return (
     <div className="max-w-4xl mx-auto p-4">
       {/* CARD DE IDENTIDAD */}
-      <div className="bg-white rounded-[45px] shadow-[0_20px_60px_rgba(0,0,0,0.05)] p-10 mb-8 border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-[45px] shadow-[0_20px_60px_rgba(0,0,0,0.05)] p-10 mb-8 border border-gray-100 relative overflow-hidden">
         <div className="flex flex-col sm:flex-row items-center gap-8">
           <div className="relative">
             <div className="w-36 h-36 rounded-[40px] overflow-hidden border-4 border-white shadow-2xl bg-gray-50 flex items-center justify-center">
@@ -106,8 +103,8 @@ export default function PerfilForm() {
               {usuarioActual.username}
             </h2>
             <div className="flex flex-wrap justify-center sm:justify-start gap-3">
-              <span className="bg-[#fcfaff] text-[#7e1d91] text-[10px] font-black px-4 py-2 rounded-xl border border-purple-50 uppercase tracking-widest">
-                Miembro desde: {fechaFormateada}
+              <span className="bg-[#fcfaff] text-[#7e1d91] text-[10px] font-black px-4 py-2 rounded-xl border border-purple-50 uppercase tracking-widest flex items-center gap-2">
+                <CheckCircle2 size={12} className="text-[#00d1c4]" /> Miembro desde: {fechaFormateada}
               </span>
             </div>
           </div>
@@ -133,7 +130,7 @@ export default function PerfilForm() {
                     <button 
                         onClick={handleCambiarFotoPorLink}
                         disabled={isSubmitting}
-                        className="bg-[#00d1c4] text-[#3b0f52] px-8 py-4 rounded-[20px] font-black uppercase italic text-xs tracking-widest hover:scale-105 transition-all shadow-lg"
+                        className="bg-[#00d1c4] text-[#3b0f52] px-8 py-4 rounded-[20px] font-black uppercase italic text-xs tracking-widest hover:scale-105 transition-all shadow-lg active:scale-95"
                     >
                         {isSubmitting ? <Loader className="animate-spin" size={18} /> : "Actualizar"}
                     </button>
@@ -163,7 +160,7 @@ export default function PerfilForm() {
           <button 
             type="submit" 
             disabled={isSubmitting}
-            className="md:col-span-2 w-full bg-[#7e1d91] text-white py-5 rounded-[25px] font-black uppercase italic tracking-widest hover:bg-[#3b0f52] transition-all flex items-center justify-center gap-3"
+            className="md:col-span-2 w-full bg-[#7e1d91] text-white py-5 rounded-[25px] font-black uppercase italic tracking-widest hover:bg-[#3b0f52] transition-all flex items-center justify-center gap-3 active:scale-95 shadow-xl shadow-purple-100"
           >
             {isSubmitting ? <Loader className="animate-spin" /> : "Actualizar Información"}
           </button>
