@@ -43,7 +43,6 @@ export default function Perfil() {
     menuConfig.push(
       { id: 'usuarios', label: 'Usuarios', icon: <Users size={18} />, component: <GestionUsuarios /> },
       { id: 'reclamos', label: 'Reclamos + Quejas', icon: <LayoutDashboard size={18} />, component: <GestionReclamos /> },
-      { id: 'postulaciones', label: 'Postulaciones', icon: <Briefcase size={18} />, component: <GestionPostulaciones /> },
       { id: 'empleos', label: 'Empleos', icon: <PlusCircle size={18} />, component: <GestionSubirEmpleo /> },
       { id: 'preguntas', label: 'Preguntas', icon: <HelpCircle size={18} />, component: <Preguntas /> }
     );
