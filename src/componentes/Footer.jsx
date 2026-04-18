@@ -159,7 +159,7 @@ export default function Footer() {
               Ver libro de reclamaciones
             </Link>
             <Link
-              to="/Productos"
+              to="/unete"
               className="w-full flex justify-center border border-white/20 py-3 rounded-full hover:bg-white/20"
             >
               Trabaja con nosotros

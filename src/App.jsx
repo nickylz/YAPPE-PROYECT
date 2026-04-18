@@ -1,4 +1,3 @@
-
 import { Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 
@@ -16,7 +15,7 @@ import Login from './componentes/Login';
 const Inicio = lazy(() => import("./paginas/Index"));
 const Nosotros = lazy(() => import("./paginas/Nosotros"));
 const CentrodeAyuda = lazy(() => import("./paginas/CentrodeAyuda"));
-const Productos = lazy(() => import("./paginas/Productos"));
+const Unete = lazy(() => import("./paginas/Unete")); // Cambiado de Productos a Unete
 const Perfil = lazy(() => import("./paginas/Perfil"));
 const LibroDeReclamaciones = lazy(() => import("./paginas/LibroDeReclamaciones"));
 
@@ -46,7 +45,7 @@ function App() {
             <Route path="/" element={<Inicio />} />
             <Route path="/nosotros" element={<Nosotros />} />
             <Route path="/centrodeayuda" element={<CentrodeAyuda />} />
-            <Route path="/productos" element={<Productos />} />
+            <Route path="/unete" element={<Unete />} /> {/* Ahora llama al componente Unete */}
             <Route path="/perfil/:username" element={<Perfil />} />
             <Route path="/libro-de-reclamaciones" element={<LibroDeReclamaciones />} />
             

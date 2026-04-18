@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Search, MapPin, Clock, ArrowRight, Briefcase, Loader } from "lucide-react";
 import empleoImg from "../componentes/img/empleo.png";
 
-export default function Productos() {
+export default function Unete() {
   const [vacantes, setVacantes] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [cargando, setCargando] = useState(true);

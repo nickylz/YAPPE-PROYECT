@@ -95,7 +95,7 @@ export default function NavBar() {
                 Inicio
               </Link>
               <Link
-                to="/productos"
+                to="/unete"
                 className={`${isWhite
                   ? "text-[#42346c] hover:bg-slate-100"
                   : "text-white hover:bg-white/20"
@@ -180,7 +180,7 @@ export default function NavBar() {
           <Link to="/" className="text-2xl font-bold text-[#00d1b2]">
             Inicio
           </Link>
-          <Link to="/productos" className="text-2xl font-bold">
+          <Link to="/unete" className="text-2xl font-bold">
             Únete a Yape
           </Link>
           <Link to="/CentrodeAyuda" className="text-2xl font-bold">
