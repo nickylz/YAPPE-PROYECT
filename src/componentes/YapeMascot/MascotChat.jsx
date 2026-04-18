@@ -112,7 +112,7 @@ const MascotChat = ({ onClose, onOpenLogin }) => {
             Mi Perfil 👤
           </button>
           <Link
-            to="/consultas"
+            to="/centrodeayuda"
             className="py-2 px-4 bg-white border border-[#00d1b2] text-[#00d1b2] rounded-full text-[11px] font-bold hover:bg-[#00d1b2] hover:text-white transition-all shadow-sm"
           >
             Ayuda 🚩

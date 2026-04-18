@@ -1,283 +1,286 @@
-import { useState } from "react";
-import { db, storage } from "../lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useState, useEffect } from "react";
+import { db, auth } from "../lib/firebase";
+import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/firestore";
 import { 
-  User, FileText, Camera, Send, Loader, CheckCircle2, 
-  AlertCircle, Image as ImageIcon, ArrowLeft, DollarSign
+  User, FileText, Send, Loader, CheckCircle2, 
+  ArrowLeft, MapPin, AlertCircle, MessageSquare, ShieldAlert
 } from "lucide-react";
+// Importación de la base de datos geográfica
+import { departamentos, provincias as provinciasData, distritos as distritosData } from '../lib/peru-geo';
 import toast from "react-hot-toast";
 
 export default function LibroDeReclamaciones() {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); 
   const [loading, setLoading] = useState(false);
-  const [fotos, setFotos] = useState([]);
   const [form, setForm] = useState({
     nombres: "", apellidos: "", documento: "", email: "",
     telefono: "", direccion: "", departamento: "", provincia: "", distrito: "",
-    montoReclamado: "", comentario: "", tipo: "Reclamo"
+    montoReclamado: "", comentario: "", tipo: "" 
   });
+
+  // --- LÓGICA DE PROTECCIÓN POR ROLES ---
+  const [rol, setRol] = useState(null);
+  const [buscandoRol, setBuscandoRol] = useState(true);
+
+  useEffect(() => {
+    const obtenerRol = async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+          if (userDoc.exists()) {
+            setRol(userDoc.data().rol);
+          }
+        }
+      } catch (error) {
+        console.error("Error al obtener rol:", error);
+      } finally {
+        setBuscandoRol(false);
+      }
+    };
+    obtenerRol();
+  }, []);
+
+  const esStaff = rol === "admin" || rol === "editor";
+  // ---------------------------------------
+
+  const [listaProvincias, setListaProvincias] = useState([]);
+  const [listaDistritos, setListaDistritos] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "montoReclamado" && value.length > 5) return;
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
+    
+    if (name === "documento") {
+      const val = value.replace(/\D/g, ""); 
+      if (val.length <= 8) setForm(prev => ({ ...prev, [name]: val }));
+      return;
+    }
+    if (name === "telefono") {
+      const val = value.replace(/\D/g, ""); 
+      if (val.length <= 9) setForm(prev => ({ ...prev, [name]: val }));
+      return;
+    }
 
-  const handleFileChange = (e) => {
-    if (e.target.files) {
-      setFotos(Array.from(e.target.files));
+    setForm(prev => ({ ...prev, [name]: value }));
+
+    if (name === "departamento") {
+      setListaProvincias(provinciasData[value] || []);
+      setListaDistritos([]);
+      setForm(prev => ({ ...prev, departamento: value, provincia: "", distrito: "" }));
+    }
+    
+    if (name === "provincia") {
+      setListaDistritos(distritosData[value] || []);
+      setForm(prev => ({ ...prev, provincia: value, distrito: "" }));
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    if (esStaff) {
+      return toast.error("El personal administrativo no puede registrar reclamos.");
+    }
+
+    if (!form.comentario || !form.tipo) {
+      return toast.error("Por favor, completa el detalle de tu solicitud.");
+    }
+
     setLoading(true);
-
     try {
-      const fotoUrls = [];
-      for (const foto of fotos) {
-        const storageRef = ref(storage, `reclamos/${Date.now()}-${foto.name}`);
-        const snapshot = await uploadBytes(storageRef, foto);
-        const url = await getDownloadURL(snapshot.ref);
-        fotoUrls.push(url);
-      }
-
-      await addDoc(collection(db, "reclamos"), {
+      await addDoc(collection(db, "reclamaciones"), {
         ...form,
-        montoReclamado: parseFloat(form.montoReclamado) || 0,
-        fotos: fotoUrls,
-        fechaCreacion: serverTimestamp(),
-        estado: "pendiente"
+        fecha: serverTimestamp(),
+        estado: "Pendiente"
       });
-
-      toast.success("¡Enviado con éxito!");
       setStep(3);
+      toast.success("Enviado correctamente");
     } catch (error) {
-      console.error("Error:", error);
-      toast.error("Error al procesar la solicitud");
+      console.error(error);
+      toast.error("Error al enviar. Inténtalo de nuevo.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Input base con Tailwind puro
-  const inputClass = "w-full px-6 py-4 bg-white border-2 border-[#f0ebf5] rounded-[20px] text-[#3b0f52] font-semibold transition-all placeholder:text-[#6b4a88]/40 placeholder:font-normal focus:outline-none focus:border-[#00d1c4] focus:ring-4 focus:ring-[#00d1c4]/10";
-
-  if (step === 3) {
-    return (
-      <div className="min-h-screen bg-[#fcfaff] flex items-center justify-center p-6 font-sans">
-        <div className="max-w-md w-full bg-white rounded-[40px] p-12 text-center shadow-2xl border border-purple-50 animate-in zoom-in duration-500">
-          <div className="w-24 h-24 bg-[#00d1c4]/10 rounded-full flex items-center justify-center mx-auto text-[#00d1c4] mb-8">
-            <CheckCircle2 size={56} strokeWidth={3} />
-          </div>
-          <h2 className="text-3xl font-black text-[#3b0f52] mb-4">¡Listo, Yaper@!</h2>
-          <p className="text-[#6b4a88] font-medium mb-10 leading-relaxed">
-            Hemos registrado tu reclamo correctamente. Nuestro equipo lo revisará en breve.
-          </p>
-          <button 
-            onClick={() => window.location.href = "/"}
-            className="w-full bg-[#7e1d91] text-white py-4 rounded-[20px] font-black shadow-lg shadow-purple-200 hover:scale-[1.02] transition-transform"
-          >
-            Volver al Inicio
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const inputStyle = "w-full bg-[#fcfaff] border-2 border-[#f0ebf5] rounded-2xl px-6 py-4 text-[#3b0f52] font-semibold focus:border-[#7e1d91] focus:ring-4 focus:ring-[#7e1d91]/5 transition-all outline-none placeholder:text-gray-300 placeholder:font-normal disabled:opacity-50 disabled:cursor-not-allowed";
+  const labelStyle = "block text-xs font-black text-[#3b0f52] uppercase tracking-[0.2em] mb-3 ml-2 italic";
 
   return (
-    <div className="min-h-screen bg-[#fcfaff] pb-20 font-sans">
-      
-      {/* HERO SECTION */}
-      <div className="relative h-[450px] md:h-[550px] w-full overflow-hidden flex items-center justify-center text-center">
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center"
-          style={{ backgroundImage: `url('https://www.yape.com.pe/static/867f08c5c7d5c7b39a7b6b3e9d3d9e8c/banner-vibrayape.png')` }} 
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-[#3b0f52]/80 via-[#7e1d91]/75 to-[#fcfaff]"></div>
+    <div className="min-h-screen bg-[#fcfaff] py-12 px-4 md:py-20 font-sans text-left">
+      <div className="max-w-4xl mx-auto bg-white rounded-[40px] md:rounded-[60px] shadow-[0_40px_100px_rgba(59,15,82,0.1)] border border-[#f0e4ff] overflow-hidden">
+        
+        {/* HEADER */}
+        <div className="bg-[#3b0f52] p-8 md:p-12 text-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#7e1d91] rounded-full -mr-32 -mt-32 opacity-20 animate-pulse"></div>
+          <h1 className="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter relative z-10">Libro de <br/> <span className="text-[#00d1c4]">Reclamaciones</span></h1>
+          <p className="text-white/60 text-xs md:text-sm font-bold uppercase tracking-[0.3em] mt-4 relative z-10">Tu opinión nos ayuda a mejorar</p>
         </div>
 
-        <div className="relative z-10 px-4 mt-[-20px]">
-          <span className="inline-block px-5 py-2 bg-[#00d1c4] text-[#3b0f52] text-[11px] font-black uppercase tracking-[0.25em] rounded-full mb-6 shadow-xl">
-            Atención al Cliente
-          </span>
-          <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter italic leading-none drop-shadow-sm">
-            Libro de <br /> Reclamaciones
-          </h1>
-          <p className="mt-8 text-white/95 max-w-2xl mx-auto text-lg md:text-xl font-medium leading-relaxed">
-            En Yape nos importa escucharte. Cuéntanos qué pasó para ayudarte a que tu vida siga fluyendo.
-          </p>
-        </div>
-      </div>
+        {/* ALERTA DE ROL (STAFF) */}
+        {esStaff && (
+          <div className="mx-8 mt-8 md:mx-16 flex items-center gap-4 p-6 bg-red-50 border-2 border-red-100 rounded-[2rem] animate-in fade-in zoom-in-95">
+            <ShieldAlert className="text-red-500" size={32} />
+            <div>
+              <p className="text-red-600 font-black uppercase text-xs tracking-widest italic">Acceso restringido</p>
+              <p className="text-red-400 text-sm font-bold">Como {rol}, solo puedes visualizar este módulo pero no enviar datos.</p>
+            </div>
+          </div>
+        )}
 
-      <div className="max-w-5xl mx-auto px-4 -mt-24 relative z-20">
-        <div className="bg-white rounded-[48px] shadow-[0_40px_100px_rgba(59,15,82,0.12)] border border-purple-50 overflow-hidden">
-          
-          {step === 1 && (
-            <div className="p-12 md:p-24 text-center space-y-12">
-              <div className="space-y-4">
-                <h3 className="text-3xl md:text-4xl font-black text-[#3b0f52]">¿Deseas registrar una queja?</h3>
-                <p className="text-[#6b4a88] max-w-md mx-auto font-medium text-lg leading-relaxed">
-                  Este espacio es exclusivo para reportar inconvenientes con la calidad de nuestros servicios o productos.
-                </p>
-              </div>
-              
+        {/* PASO 0: SELECCIÓN DE TIPO */}
+        {step === 0 && (
+          <div className="p-8 md:p-16 space-y-10 animate-in fade-in slide-in-from-bottom-4">
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-black text-[#3b0f52] uppercase italic">¿Qué deseas realizar?</h2>
+              <p className="text-gray-400 font-medium">Selecciona una opción para continuar</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <button 
-                onClick={() => setStep(2)}
-                className="group relative bg-[#fcfaff] border-2 border-[#7e1d91] p-14 rounded-[44px] w-full max-w-md hover:bg-[#7e1d91] transition-all duration-500 shadow-xl mx-auto block overflow-hidden"
+                disabled={esStaff}
+                onClick={() => { setForm(prev => ({ ...prev, tipo: "Reclamo" })); setStep(1); }} 
+                className={`group p-8 bg-[#fcfaff] border-2 border-[#f0ebf5] rounded-[35px] transition-all text-left space-y-4 ${esStaff ? 'opacity-50 cursor-not-allowed' : 'hover:border-[#7e1d91]'}`}
               >
-                <div className="flex flex-col items-center gap-6 relative z-10">
-                  <div className="p-6 bg-[#7e1d91] group-hover:bg-white rounded-[30px] transition-all shadow-lg group-hover:scale-110">
-                    <AlertCircle className="text-white group-hover:text-[#7e1d91]" size={48} />
-                  </div>
-                  <span className="text-2xl font-black text-[#7e1d91] group-hover:text-white uppercase tracking-widest">
-                    Empezar Registro
-                  </span>
+                <div className={`w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-[#7e1d91] shadow-sm transition-colors ${!esStaff && 'group-hover:bg-[#7e1d91] group-hover:text-white'}`}>
+                  <AlertCircle size={28} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-[#3b0f52] uppercase italic">Reclamo</h3>
+                  <p className="text-sm text-gray-400 font-medium">Disconformidad relacionada a algún retraso o mal funcionamiento.</p>
+                </div>
+              </button>
+              <button 
+                disabled={esStaff}
+                onClick={() => { setForm(prev => ({ ...prev, tipo: "Queja" })); setStep(1); }} 
+                className={`group p-8 bg-[#fcfaff] border-2 border-[#f0ebf5] rounded-[35px] transition-all text-left space-y-4 ${esStaff ? 'opacity-50 cursor-not-allowed' : 'hover:border-[#00d1c4]'}`}
+              >
+                <div className={`w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-[#00d1c4] shadow-sm transition-colors ${!esStaff && 'group-hover:bg-[#00d1c4] group-hover:text-white'}`}>
+                  <MessageSquare size={28} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-[#3b0f52] uppercase italic">Queja</h3>
+                  <p className="text-sm text-gray-400 font-medium">Malestar o descontento respecto a la atención al público.</p>
                 </div>
               </button>
             </div>
-          )}
+          </div>
+        )}
 
-          {step === 2 && (
-            <form onSubmit={handleSubmit} className="p-8 md:p-20 space-y-20 animate-in slide-in-from-bottom-10 duration-700">
-              
-              {/* Sección 1: Datos Personales */}
-              <div className="space-y-10">
-                <div className="flex items-center gap-6">
-                  <div className="p-5 bg-[#7e1d91] rounded-[24px] text-white shadow-lg shadow-purple-100">
-                     <User size={32} strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-black text-[#3b0f52]">1. Tus Datos</h3>
-                    <p className="text-[10px] text-[#00d1c4] font-black uppercase tracking-[0.2em]">Información personal</p>
-                  </div>
-                </div>
+        {/* PASO 1: DATOS PERSONALES Y UBICACIÓN */}
+        {step === 1 && (
+          <div className="p-8 md:p-16 space-y-12 animate-in fade-in slide-in-from-right-4">
+            <button onClick={() => setStep(0)} className="flex items-center gap-2 text-[#7e1d91] font-black uppercase text-xs tracking-widest hover:opacity-50 transition-all">
+              <ArrowLeft size={16} /> Volver
+            </button>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Nombres</label>
-                    <input name="nombres" placeholder="Ej. Juan Diego" required className={inputClass} onChange={handleChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Apellidos</label>
-                    <input name="apellidos" placeholder="Ej. Pérez" required className={inputClass} onChange={handleChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Documento (DNI/RUC)</label>
-                    <input name="documento" placeholder="Número de ID" required className={inputClass} onChange={handleChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Email</label>
-                    <input name="email" type="email" placeholder="correo@ejemplo.com" required className={inputClass} onChange={handleChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Celular</label>
-                    <input name="telefono" placeholder="999 999 999" required className={inputClass} onChange={handleChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Dirección</label>
-                    <input name="direccion" placeholder="Calle / Av / Jr" required className={inputClass} onChange={handleChange} />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-[#fcfaff] p-8 rounded-[32px] border border-[#f0ebf5]">
-                  <input name="departamento" placeholder="Departamento" className={inputClass} onChange={handleChange} />
-                  <input name="provincia" placeholder="Provincia" className={inputClass} onChange={handleChange} />
-                  <input name="distrito" placeholder="Distrito" className={inputClass} onChange={handleChange} />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-2">
+                <label className={labelStyle}>Nombres</label>
+                <input name="nombres" value={form.nombres} onChange={handleChange} placeholder="Ej. Juan Gabriel" className={inputStyle} disabled={esStaff} />
+              </div>
+              <div className="space-y-2">
+                <label className={labelStyle}>Apellidos</label>
+                <input name="apellidos" value={form.apellidos} onChange={handleChange} placeholder="Ej. Quispe Mamani" className={inputStyle} disabled={esStaff} />
+              </div>
+              <div className="space-y-2">
+                <label className={labelStyle}>DNI / CE (8 dígitos)</label>
+                <input name="documento" value={form.documento} onChange={handleChange} placeholder="Ej. 74859612" className={inputStyle} disabled={esStaff} />
+              </div>
+              <div className="space-y-2">
+                <label className={labelStyle}>Correo Electrónico</label>
+                <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="ejemplo@gmail.com" className={inputStyle} disabled={esStaff} />
+              </div>
+              <div className="space-y-2">
+                <label className={labelStyle}>Teléfono / WhatsApp</label>
+                <input name="telefono" value={form.telefono} onChange={handleChange} placeholder="Ej. 912345678" className={inputStyle} disabled={esStaff} />
+              </div>
+              <div className="space-y-2">
+                <label className={labelStyle}>Dirección Exacta</label>
+                <input name="direccion" value={form.direccion} onChange={handleChange} placeholder="Ej. Av. Las Flores 123 - Int. 4" className={inputStyle} disabled={esStaff} />
               </div>
 
-              {/* Sección 2: El Reclamo */}
-              <div className="space-y-10">
-                <div className="flex items-center gap-6">
-                  <div className="p-5 bg-[#00d1c4] rounded-[24px] text-[#3b0f52] shadow-lg shadow-cyan-50">
-                     <FileText size={32} strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-black text-[#3b0f52]">2. El Reclamo</h3>
-                    <p className="text-[10px] text-[#7e1d91] font-black uppercase tracking-[0.2em]">Detalle del incidente</p>
-                  </div>
-                </div>
+              <div className="space-y-2">
+                <label className={labelStyle}>Departamento</label>
+                <select name="departamento" value={form.departamento} onChange={handleChange} className={inputStyle} disabled={esStaff}>
+                  <option value="">Selecciona...</option>
+                  {departamentos.map(dep => <option key={dep} value={dep}>{dep}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className={labelStyle}>Provincia</label>
+                <select name="provincia" value={form.provincia} onChange={handleChange} className={inputStyle} disabled={!form.departamento || esStaff}>
+                  <option value="">Selecciona...</option>
+                  {listaProvincias.map(prov => <option key={prov} value={prov}>{prov}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className={labelStyle}>Distrito</label>
+                <select name="distrito" value={form.distrito} onChange={handleChange} className={inputStyle} disabled={!form.provincia || esStaff}>
+                  <option value="">Selecciona...</option>
+                  {listaDistritos.map(dist => <option key={dist} value={dist}>{dist}</option>)}
+                </select>
+              </div>
+            </div>
 
-                <div className="space-y-8">
-                  <div className="max-w-xs space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Monto reclamado (S/)</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-6 flex items-center text-[#7e1d91] font-black">S/</div>
-                      <input 
-                        name="montoReclamado" 
-                        type="number"
-                        value={form.montoReclamado}
-                        placeholder="0.00" 
-                        className={`${inputClass} pl-14`} 
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-[#3b0f52] uppercase ml-1 opacity-60">Descripción de los hechos</label>
-                    <textarea 
-                      name="comentario" 
-                      placeholder="Explícanos detalladamente qué sucedió..." 
-                      required 
-                      className={`${inputClass} h-52 resize-none pt-6 leading-relaxed`}
-                      onChange={handleChange}
-                    />
-                  </div>
+            <button onClick={() => setStep(2)} className="w-full bg-[#7e1d91] text-white py-6 rounded-[30px] font-black text-xl shadow-xl shadow-[#7e1d91]/20 hover:bg-[#3b0f52] transition-all flex items-center justify-center gap-4 uppercase italic tracking-widest">
+              Siguiente Paso <ArrowLeft size={22} className="rotate-180" />
+            </button>
+          </div>
+        )}
+
+        {/* PASO 2: DETALLE DEL RECLAMO */}
+        {step === 2 && (
+          <div className="p-8 md:p-16 space-y-10 animate-in fade-in slide-in-from-right-4">
+            <button onClick={() => setStep(1)} className="flex items-center gap-2 text-[#7e1d91] font-black uppercase text-xs tracking-widest hover:opacity-50 transition-all">
+              <ArrowLeft size={16} /> Volver
+            </button>
+
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className={labelStyle}>Monto Reclamado (Opcional)</label>
+                <div className="relative">
+                  <span className="absolute left-6 top-1/2 -translate-y-1/2 font-black text-[#7e1d91]">S/</span>
+                  <input name="montoReclamado" value={form.montoReclamado} onChange={handleChange} placeholder="0.00" className={`${inputStyle} pl-12`} disabled={esStaff} />
                 </div>
               </div>
-
-              {/* Sección 3: Evidencias */}
-              <div className="space-y-10">
-                <div className="flex items-center gap-6">
-                  <div className="p-5 bg-white rounded-[24px] text-[#7e1d91] border-2 border-[#f0ebf5]">
-                     <Camera size={32} strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-black text-[#3b0f52]">3. Evidencias</h3>
-                    <p className="text-[10px] text-[#6b4a88]/60 font-black uppercase tracking-[0.2em]">Adjunta fotos o capturas</p>
-                  </div>
-                </div>
-
-                <div className="relative group">
-                  <input 
-                    type="file" multiple accept="image/*"
-                    onChange={handleFileChange}
-                    className="absolute inset-0 opacity-0 cursor-pointer z-20"
-                  />
-                  <div className="border-4 border-dashed border-[#f0ebf5] rounded-[48px] p-16 text-center group-hover:bg-[#fcfaff] group-hover:border-[#7e1d91]/20 transition-all duration-300">
-                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm mb-6 group-hover:scale-110 transition-transform duration-500">
-                      <ImageIcon size={40} className="text-[#7e1d91]" />
-                    </div>
-                    <p className="text-[#3b0f52] font-black text-2xl">
-                      {fotos.length > 0 ? `¡${fotos.length} fotos listas!` : "Subir archivos"}
-                    </p>
-                    <p className="text-[#6b4a88] font-medium mt-3">Arrastra tus fotos o haz clic aquí</p>
-                  </div>
-                </div>
+              <div className="space-y-2">
+                <label className={labelStyle}>Detalle de su {form.tipo}</label>
+                <textarea name="comentario" value={form.comentario} onChange={handleChange} rows="6" placeholder="Cuéntanos detalladamente lo sucedido..." className={`${inputStyle} resize-none`} disabled={esStaff}></textarea>
               </div>
+            </div>
 
-              {/* Botones */}
-              <div className="flex flex-col md:flex-row gap-6 pt-12 border-t border-[#f0ebf5]">
-                <button 
-                  type="button" 
-                  onClick={() => setStep(1)}
-                  className="flex items-center justify-center gap-3 px-12 py-5 rounded-[24px] font-black text-[#7e1d91] bg-[#fcfaff] hover:bg-purple-100 transition-all uppercase text-xs tracking-widest"
-                >
-                  <ArrowLeft size={18} strokeWidth={3} /> Volver
-                </button>
-                <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="flex-1 bg-[#7e1d91] text-white py-5 rounded-[24px] font-black text-lg shadow-2xl shadow-purple-200 hover:bg-[#3b0f52] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50"
-                >
-                  {loading ? <Loader className="animate-spin" /> : <><Send size={24} strokeWidth={3} /> ENVIAR RECLAMO</>}
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
+            <button 
+              onClick={handleSubmit} 
+              disabled={loading || esStaff || buscandoRol} 
+              className={`w-full py-6 rounded-[30px] font-black text-xl shadow-2xl transition-all flex items-center justify-center gap-4 uppercase italic tracking-widest 
+                ${esStaff ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-[#3b0f52] text-white hover:bg-[#7e1d91]'}`}
+            >
+              {buscandoRol ? (
+                <Loader className="animate-spin" />
+              ) : loading ? (
+                <Loader className="animate-spin" />
+              ) : esStaff ? (
+                "Acceso Denegado"
+              ) : (
+                <><Send size={22} /> Enviar {form.tipo}</>
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* PASO 3: ÉXITO */}
+        {step === 3 && (
+          <div className="py-20 px-8 text-center space-y-8 animate-in zoom-in-95">
+            <div className="w-32 h-32 bg-white text-emerald-500 rounded-[40px] flex items-center justify-center mx-auto shadow-2xl shadow-emerald-100 border-2 border-emerald-50">
+              <CheckCircle2 size={60} />
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-4xl md:text-5xl font-black italic text-[#3b0f52] uppercase tracking-tighter">¡Registrado!</h2>
+              <p className="text-gray-400 font-bold max-w-sm mx-auto">Tu solicitud ha sido recibida. Nos comunicaremos contigo en un plazo máximo de 15 días hábiles.</p>
+            </div>
+            <button onClick={() => window.location.href = '/'} className="bg-[#7e1d91] text-white px-12 py-5 rounded-full font-black uppercase italic tracking-widest hover:scale-105 transition-transform shadow-lg shadow-purple-100">
+              Finalizar
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

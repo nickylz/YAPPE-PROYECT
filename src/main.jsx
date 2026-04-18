@@ -11,10 +11,12 @@ import { ModalProvider } from './context/ModalContext.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
+    {/* Añadimos basename="/YAPPE-PROYECT" para que las rutas funcionen 
+        correctamente en GitHub Pages.
+    */}
+    <BrowserRouter basename="/YAPPE-PROYECT">
       <AuthProvider>
         <EdicionProvider>
-          {/* ModalProvider puede ir aquí o más afuera si no depende de los otros */}
           <ModalProvider>
             <App />
           </ModalProvider>
@@ -22,4 +24,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
-);
+); 

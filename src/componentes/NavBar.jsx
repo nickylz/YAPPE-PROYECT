@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaBars,
   FaTimes,
   FaSignOutAlt,
-  FaQuestionCircle,
 } from "react-icons/fa";
 import Login from "./Login";
 import yapeLogo from "./img/Yape-icon.png";
@@ -13,8 +12,9 @@ import { useAuth } from "../context/authContext";
 export default function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { usuarioActual, logout } = useAuth();
+  const { usuarioActual, cerrarSesion } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const puedeVerIntranet =
     usuarioActual?.rol === "admin" || usuarioActual?.rol === "editor";
@@ -47,19 +47,27 @@ export default function NavBar() {
 
   const isWhite = isScrolled;
 
+  const handleLogout = async () => {
+    try {
+      await cerrarSesion();
+      setMenuOpen(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
+  };
+
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-          isWhite
-            ? "bg-white border-b border-slate-200 shadow-sm"
-            : "bg-transparent"
-        }`}
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isWhite
+          ? "bg-white border-b border-slate-200 shadow-sm"
+          : "bg-transparent"
+          }`}
       >
         <div
-          className={`max-w-6xl mx-auto px-4 ${
-            isHome ? (isScrolled ? "py-1" : "py-4") : "py-1"
-          } flex items-center justify-between`}
+          className={`max-w-6xl mx-auto px-4 ${isHome ? (isScrolled ? "py-1" : "py-4") : "py-1"
+            } flex items-center justify-between`}
         >
           {/* IZQUIERDA (logo + links) */}
           <div className="flex items-center gap-6">
@@ -67,83 +75,79 @@ export default function NavBar() {
               <img
                 src={yapeLogo}
                 alt="Yape"
-                className={`${
-                  isHome
-                    ? isScrolled
-                      ? "w-11 h-11"
-                      : "w-20 h-20"
-                    : "w-11 h-11"
-                } object-contain transition-all duration-300`}
+                className={`${isHome
+                  ? isScrolled
+                    ? "w-11 h-11"
+                    : "w-20 h-20"
+                  : "w-11 h-11"
+                  } object-contain transition-all duration-300`}
               />
             </Link>
 
             <nav className="hidden lg:flex items-center gap-2">
               <Link
                 to="/"
-                className={`${
-                  isWhite
-                    ? "text-[#42346c] hover:bg-slate-100"
-                    : "text-white hover:bg-white/20"
-                } font-semibold px-3 py-1.5 rounded-full transition`}
+                className={`${isWhite
+                  ? "text-[#42346c] hover:bg-slate-100"
+                  : "text-white hover:bg-white/20"
+                  } font-semibold px-3 py-1.5 rounded-full transition`}
               >
                 Inicio
               </Link>
               <Link
-                to="/productos"
-                className={`${
-                  isWhite
-                    ? "text-[#42346c] hover:bg-slate-100"
-                    : "text-white hover:bg-white/20"
-                } font-semibold px-3 py-1.5 rounded-full transition`}
+                to="/unete"
+                className={`${isWhite
+                  ? "text-[#42346c] hover:bg-slate-100"
+                  : "text-white hover:bg-white/20"
+                  } font-semibold px-3 py-1.5 rounded-full transition`}
               >
                 Únete a Yape
               </Link>
               <Link
                 to="/nosotros"
-                className={`${
-                  isWhite
-                    ? "text-[#42346c] hover:bg-slate-100"
-                    : "text-white hover:bg-white/20"
-                } font-semibold px-3 py-1.5 rounded-full transition`}
+                className={`${isWhite
+                  ? "text-[#42346c] hover:bg-slate-100"
+                  : "text-white hover:bg-white/20"
+                  } font-semibold px-3 py-1.5 rounded-full transition`}
               >
                 Sobre Nosotros
               </Link>
-            <Link
-                to="/centrodeayuda"
-                className={`${
-                    isWhite
-                      ? "text-[#42346c] hover:bg-slate-100"
-                      : "text-white hover:bg-white/20"
+              <Link
+                to="/CentrodeAyuda"
+                className={`${isWhite
+                  ? "text-[#42346c] hover:bg-slate-100"
+                  : "text-white hover:bg-white/20"
                   } font-semibold px-3 py-1.5 rounded-full transition`}
-                >Centro de Ayuda </Link>
-
-
-              {puedeVerIntranet && (
-                <Link
-                  to="/intranet"
-                  className={`${
-                    isWhite
-                      ? "text-[#42346c] hover:bg-slate-100"
-                      : "text-white hover:bg-white/20"
-                  } font-semibold px-3 py-1.5 rounded-full transition`}
-                >
-                  Intranet
-                </Link>
-              )}
+              >
+                Centro de Ayuda
+              </Link>
+              
             </nav>
           </div>
 
           {/* DERECHA (login/cuenta) */}
           <div className="flex items-center gap-4 ml-auto">
-            <div className="hidden lg:block">
-              {/* Si hay usuario, envolvemos el Login en un Link a perfil */}
+            <div className="hidden lg:flex items-center gap-3">
               {usuarioActual ? (
-                <Link
-                  to={`/perfil/${usuarioActual?.username || "user"}`}
-                  className="block"
-                >
-                  <Login isScrolled={isWhite} />
-                </Link>
+                <>
+                  <Link
+                    to={`/perfil/${usuarioActual?.username || "user"}`}
+                    className="block hover:opacity-80 transition"
+                  >
+                    <Login isScrolled={isWhite} />
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    title="Cerrar sesión"
+                    className={`p-2 rounded-full transition-colors ${isWhite
+                      ? "text-[#42346c] hover:bg-slate-100"
+                      : "text-white hover:bg-white/20"
+                      }`}
+                  >
+                    <FaSignOutAlt className="text-xl" />
+                  </button>
+                </>
               ) : (
                 <Login isScrolled={isWhite} />
               )}
@@ -151,20 +155,19 @@ export default function NavBar() {
 
             <button
               onClick={() => setMenuOpen(true)}
-              className={`${
-                isWhite ? "text-[#42346c]" : "text-white"
-              } text-2xl lg:hidden`}
+              className={`${isWhite ? "text-[#42346c]" : "text-white"
+                } text-2xl lg:hidden`}
             >
               <FaBars />
             </button>
           </div>
         </div>
       </header>
+
       {/* MENÚ MÓVIL FULL SCREEN */}
       <div
-        className={`fixed inset-0 bg-white z-60 transform transition-transform duration-500 ease-in-out ${
-          menuOpen ? "translate-y-0" : "-translate-y-full"
-        } lg:hidden flex flex-col`}
+        className={`fixed inset-0 bg-white z-60 transform transition-transform duration-500 ease-in-out ${menuOpen ? "translate-y-0" : "-translate-y-full"
+          } lg:hidden flex flex-col`}
       >
         <div className="p-4 flex justify-between items-center border-b border-slate-100">
           <img src={yapeLogo} className="w-10" alt="Logo" />
@@ -177,26 +180,21 @@ export default function NavBar() {
           <Link to="/" className="text-2xl font-bold text-[#00d1b2]">
             Inicio
           </Link>
-          <Link to="/productos" className="text-2xl font-bold">
-            Productos
+          <Link to="/unete" className="text-2xl font-bold">
+            Únete a Yape
+          </Link>
+          <Link to="/CentrodeAyuda" className="text-2xl font-bold">
+            Centro de Ayuda
           </Link>
           <Link to="/nosotros" className="text-2xl font-bold">
             Nosotros
           </Link>
-          {puedeVerIntranet && (
-            <Link to="/intranet" className="text-2xl font-bold">
-              Intranet
-            </Link>
-          )}
         </nav>
 
         {/* PARTE INFERIOR MÓVIL */}
         <div className="p-6 bg-slate-50 border-t border-slate-100 flex flex-col gap-3">
           {usuarioActual ? (
             <div className="flex flex-col gap-3 w-full">
-              {" "}
-              {/* Contenedor para poner uno debajo del otro */}
-              {/* Sección Mi Cuenta */}
               <Link
                 to={`/perfil/${usuarioActual?.username || "user"}`}
                 className="w-full flex items-center justify-center gap-3 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm text-[#42346c] font-bold active:scale-95 transition"
@@ -205,15 +203,11 @@ export default function NavBar() {
                 <div className="scale-110">
                   <Login isScrolled={true} />
                 </div>
-                <span className="text-xl whitespace-nowrap">Mi cuenta</span>
+                <span className="text-xl">Mi cuenta</span>
               </Link>
-              {/* Botón Cerrar Sesión (Ahora siempre abajo) */}
+
               <button
-                onClick={async () => {
-                  await cerrarSesion(); // Llama a la función del context
-                  setMenuOpen(false);
-                  navigate("/");
-                }}
+                onClick={handleLogout}
                 className="flex items-center justify-center gap-2 w-full py-4 bg-[#7e1d91] text-white rounded-2xl font-bold shadow-md active:scale-95 transition"
               >
                 <FaSignOutAlt className="text-lg" />

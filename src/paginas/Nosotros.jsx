@@ -1,149 +1,151 @@
-import React from "react";
-// Swiper para el carrusel (Instalación: npm install swiper)
+import React, { useState, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Link } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/pagination";
 
+// IMÁGENES MUJERES
+import mujer1 from "../componentes/img/mujer1.png";
+import mujer2 from "../componentes/img/mujer2.png";
+import mujer3 from "../componentes/img/mujer3.png";
+import mujer4 from "../componentes/img/mujer4.png";
+import mujer5 from "../componentes/img/mujer5.png";
+
 export default function NosotrosYape() {
+  const [expandedIndex, setExpandedIndex] = useState(null);
+  const scrollMujeresRef = useRef(null);
+
+  const mujeresYape = [
+    { id: 1, 
+      nombre: "Lucía Berrantes", 
+      rol: "Experiencia", 
+      img: mujer1, 
+      detalle: "Lidero equipos tecnológicos enfocados en crear soluciones que impactan a millones de peruanos diariamente." },
+    { id: 2, 
+      nombre: "Natalia Prieto", 
+      rol: "Estrategia de personas", 
+      img: mujer2, 
+      detalle: "Diseño experiencias inclusivas. Aquí mi voz se escucha y mis ideas se transforman en funciones reales." },
+    { id: 3, 
+      nombre: "Shen Tay Wo Chong", 
+      rol: "Tecnología", 
+      img: mujer3, 
+      detalle: "Programar en Yape es un resto constante. Formo parte de una comunidad técnica increíble." },
+    { id: 4, 
+      nombre: "Valeria Ríos", 
+      rol: "Data Analyst", 
+      img: mujer4, 
+      detalle: "Transformo datos en estrategias. Yape me ha permitido crecer en un ambiente de total confianza." },
+    { id: 5, 
+      nombre: "Carla Espinoza", 
+      rol: "Talent Acquisition", 
+      img: mujer5, 
+      detalle: "Mi misión es encontrar el talento que mueva al país. Buscamos mujeres apasionadas." }
+  ];
+
+  const handleScroll = (direction) => {
+    if (scrollMujeresRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollMujeresRef.current;
+      const cardWidth = 300; 
+      
+      let newScroll;
+      if (direction === "left") {
+        newScroll = scrollLeft - cardWidth;
+        if (scrollLeft <= 0) {
+          newScroll = scrollWidth - clientWidth;
+        }
+      } else {
+        newScroll = scrollLeft + cardWidth;
+        if (scrollLeft + clientWidth >= scrollWidth - 10) {
+          newScroll = 0;
+        }
+      }
+
+      scrollMujeresRef.current.scrollTo({
+        left: newScroll,
+        behavior: "smooth"
+      });
+    }
+  };
+
   return (
     <div className="bg-[#fcfaff] min-h-screen font-sans">
-      {/* CORRECCIÓN: Ajuste de h-[600px] a h-[auto] y pb-20 para que el contenido no choque con el fondo */}
+
+      {/* HERO */}
       <section className="relative w-full h-[600px] md:h-[700px] flex items-center overflow-hidden bg-[#3b0f52]">
-        {/* Fondo con los colores oficiales */}
+
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#7e1d91] via-[#3b0f52] to-[#1a0624]"></div>
-          {/* Elemento decorativo circular turquesa */}
-          <div className="absolute -top-20 -right-20 w-96 h-96 bg-[#25d3c9] rounded-full blur-[120px] opacity-20"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#7e1d91] via-[#3b0f52] to-[#1a0624]" />
+          <div className="absolute -top-20 -right-20 w-96 h-96 bg-[#25d3c9] rounded-full blur-[120px] opacity-20" />
         </div>
 
-        {/* CORRECCIÓN: pb-20 adicional en móviles y pb-10 en md para dar espacio al botón */}
-        <div className="max-w-7xl mx-auto w-full px-6 md:px-20 relative z-10 pt-16 md:pt-0 pb-20 md:pb-10">
+        <div className="max-w-7xl mx-auto w-full px-6 md:px-20 relative z-10 pt-16 pb-20">
           <div className="max-w-3xl">
+
             <span className="inline-block px-5 py-2 bg-[#25d3c9] text-[#3b0f52] text-sm font-black uppercase tracking-[0.2em] rounded-xl mb-8 shadow-lg">
               #TALENTOYAPE
             </span>
-            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-tight md:leading-[0.85] italic mb-6 drop-shadow-xl">
+
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight italic mb-6">
               Únete a nosotros y <br />
-              <span className="text-[#25d3c9]">
-                haz que tu <br /> carrera fluya
-              </span>
+              <span className="text-[#25d3c9]">haz que tu carrera fluya</span>
             </h1>
-            <p className="text-white/90 text-xl md:text-2xl max-w-xl font-medium leading-relaxed mb-10">
-              No buscamos años de experiencia, buscamos ganas de transformar el
-              Perú. Tu primer gran paso empieza aquí.
+
+            <p className="text-white/90 text-xl md:text-2xl max-w-xl mb-10">
+              No buscamos experiencia, buscamos talento con ganas de crecer.
             </p>
+
             <Link
               to="/productos"
-              className="px-10 py-5 bg-[#25d3c9] text-[#3b0f52] text-xl font-black rounded-2xl hover:scale-105 transition-all shadow-[0_10px_40px_rgba(37,211,201,0.4)]"
+              className="px-10 py-5 bg-[#25d3c9] text-[#3b0f52] text-xl font-black rounded-2xl hover:scale-105 transition"
             >
               ¡Postula ahora!
             </Link>
+
           </div>
         </div>
       </section>
 
-      {/* --- SECCIÓN: MISIÓN Y VISIÓN --- */}
-      <div className="max-w-6xl mx-auto px-4 mb-20 mt-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Tarjeta de Misión */}
-          <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border-b-[10px] border-[#7422ff] hover:scale-[1.02] transition-transform duration-300">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="bg-[#7422ff]/10 p-3 rounded-2xl">
-                <svg
-                  className="w-8 h-8 text-[#7422ff]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2.5"
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-3xl font-black text-[#7422ff] uppercase">
-                Misión
-              </h3>
-            </div>
-            <p className="text-gray-600 text-lg leading-relaxed font-medium">
-              Nuestra misión es simplificar la vida de todos los peruanos,
-              permitiéndoles realizar transacciones de forma rápida, segura y
-              gratuita.
-            </p>
-          </div>
+      {/* MISIÓN Y VISIÓN */}
+      <div className="max-w-6xl mx-auto px-6 mb-20 mt-24 grid grid-cols-1 md:grid-cols-2 gap-8">
 
-          {/* Tarjeta de Visión */}
-          <div className="bg-white p-5 rounded-[2.5rem] shadow-xl border-b-[10px] border-[#00d1b2] hover:scale-[1.02] transition-transform duration-300">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="bg-[#00d1b2]/10 p-3 rounded-2xl">
-                <svg
-                  className="w-8 h-8 text-[#00d1b2]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2.5"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2.5"
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-3xl font-black text-[#00d1b2] uppercase">
-                Visión
-              </h3>
-            </div>
-            <p className="text-gray-600 text-lg leading-relaxed font-medium">
-              Nuestra visión es ser la herramienta líder en inclusión financiera
-              en el Perú, conectando a millones de personas a través de la
-              tecnología.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. SECCIÓN: CONOCE AL TEAM YAPPE  */}
-      <div className="mb-12 py-24 px-6 md:px-10 lg:px-20">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl sm:text-6xl font-black text-[#7422ff] uppercase italic tracking-tighter">
-            Conoce al <span className="text-[#00d1b2]">Team Yappe</span>
-          </h2>
-          <p className="text-gray-400 font-bold mt-2 uppercase tracking-widest text-[10px] sm:text-xs">
-            Jóvenes talentosos 🎥
+        <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border-b-[10px] border-[#7422ff]">
+          <h3 className="text-3xl font-black text-[#7422ff] uppercase mb-4">Misión</h3>
+          <p className="text-gray-600 text-lg">
+            Simplificar la vida de los peruanos con transacciones rápidas y seguras.
           </p>
         </div>
 
-        {/* VIDEO PRINCIPAL */}
-        <div className="mb-10 sm:mb-16 w-full">
-          <div className="relative w-full max-w-4xl mx-auto aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-[#7422ff]/20">
-            <iframe
-              className="w-full h-full absolute inset-0"
-              src="https://www.youtube.com/embed/rEgLiaEZ0u4?si=ksTRVeEUkUfLajG8"
-              title="YouTube video player"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-            ></iframe>
-
-            {/* CAPA DE TEXTO: pointer-events-none es clave para poder darle play al video */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-center justify-center pointer-events-none">
-              <span className="text-white text-2xl sm:text-4xl font-black uppercase italic tracking-widest"></span>
-            </div>
-          </div>
+        <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border-b-[10px] border-[#00d1b2]">
+          <h3 className="text-3xl font-black text-[#00d1b2] uppercase mb-4">Visión</h3>
+          <p className="text-gray-600 text-lg">
+            Ser la herramienta líder en inclusión financiera en el Perú.
+          </p>
         </div>
 
-        {/* FILA DE 3 VIDEOS (ABAJO DEL PRINCIPAL) */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+      </div>
+
+      {/* TEAM YAPE */}
+      <div className="py-24 px-6 md:px-20 text-center">
+
+        <h2 className="text-5xl font-black text-[#7422ff] mb-10">
+          Conoce al <span className="text-[#00d1b2]">Team Yape</span>
+        </h2>
+
+        {/* VIDEO PRINCIPAL */}
+        <div className="relative max-w-4xl mx-auto aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-[#7422ff]/30 mb-10">
+          <iframe
+            className="w-full h-full"
+            src="https://www.youtube.com/embed/rEgLiaEZ0u4"
+            title="Team Yape"
+            allowFullScreen
+          />
+        </div>
+
+        {/* VIDEOS SECUNDARIOS */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-6xl mx-auto">
+
           {[
             { id: 1, cargo: "Ximena Melchor", vid: "E-tbBfSyWwU" },
             { id: 2, cargo: "Yadira Orihuela", vid: "fOhn5eylCxQ" },
@@ -151,185 +153,162 @@ export default function NosotrosYape() {
           ].map((item) => (
             <div
               key={item.id}
-              className="relative h-[300px] sm:h-[400px] rounded-[2rem] overflow-hidden shadow-xl group hover:scale-[1.02] transition-transform duration-500"
+              className="relative h-[300px] sm:h-[400px] rounded-[2rem] overflow-hidden shadow-xl group hover:scale-[1.02] transition"
             >
-              {/* FILA DE 3 VIDEOS (ABAJO DEL PRINCIPAL) */}
+
               <iframe
-                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                className="w-full h-full"
                 src={`https://www.youtube.com/embed/${item.vid}`}
                 title={item.cargo}
-                frameBorder="0"
                 allowFullScreen
-              ></iframe>
+              />
 
-              <source src={item.vid} type="video/mp4" />
-
-              <div className="absolute inset-0 bg-gradient-to-t from-[#7422ff]/80 to-transparent flex items-end p-6 pointer-events-none">
-                <p className="text-white font-black uppercase italic text-lg">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#7422ff]/80 to-transparent flex items-end p-6">
+                <p className="text-white font-black uppercase">
                   {item.cargo}
                 </p>
               </div>
+
             </div>
           ))}
+
         </div>
       </div>
-      {/* TESTIMONIOS: GRID DE 4 (2 ARRIBA, 2 ABAJO) */}
-      {/* CORRECCIÓN: Padding lateral px-6 para asegurar espacio en móviles */}
-      <section className="pb-24 pt-10 px- md:px-10 lg:px-20">
-        <div className="max-w-6xl mx-auto">
-          {/* CORRECCIÓN: Ajuste de tamaño de fuente en móviles */}
-          <h2 className="text-4xl md:text-6xl font-black text-[#3b0f52] mb-16 italic text-center leading-tight">
-            Gente joven <span className="text-[#7e1d91]">rompiéndola</span>
+
+      {/* SECCIÓN: MUJERES EN YAPE (CARRUSEL EXPANDIBLE) */}
+      <section className="py-24 bg-white overflow-hidden">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-black text-gray-900 italic tracking-tighter">
+            MUJERES EN <span className="text-[#18dbc1]">YAPE</span>
           </h2>
+          <div className="w-20 h-1.5 bg-[#7422ff] mx-auto mt-4 rounded-full"></div>
+        </div>
 
-          {/* CORRECCIÓN: Gap ajustado para mejor respiración */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-            {/* Card 1 */}
-            <div className="bg-white p-8 md:p-10 rounded-[3rem] shadow-xl border-b-[12px] border-[#25d3c9] transform hover:-rotate-1 transition-transform">
-              <div className="flex items-center gap-5 mb-6">
-                <div className="w-16 h-16 bg-[#7e1d91] rounded-2xl flex items-center justify-center text-white font-black">
-                  R
-                </div>
-                <div>
-                  <h4 className="font-black text-2xl text-[#3b0f52]">Renzo</h4>
-                  <p className="text-[#7e1d91] font-bold italic">Dev Junior</p>
+        <div className="relative max-w-[1400px] mx-auto px-4 md:px-12">
+          <button onClick={() => handleScroll("left")} className="absolute left-2 top-1/2 -translate-y-1/2 z-30 bg-white text-[#7422ff] w-12 h-12 rounded-full shadow-lg hover:bg-[#7422ff] hover:text-white transition-all flex items-center justify-center text-2xl border border-gray-100">‹</button>
+          <button onClick={() => handleScroll("right")} className="absolute right-2 top-1/2 -translate-y-1/2 z-30 bg-white text-[#7422ff] w-12 h-12 rounded-full shadow-lg hover:bg-[#7422ff] hover:text-white transition-all flex items-center justify-center text-2xl border border-gray-100">›</button>
+
+          <div ref={scrollMujeresRef} className="flex gap-8 overflow-x-auto pb-12 hide-scrollbar scroll-smooth px-10">
+            {mujeresYape.map((mujer, index) => (
+              <div
+                key={mujer.id}
+                className={`flex-shrink-0 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] bg-white rounded-[2.5rem] overflow-hidden shadow-lg border border-gray-100 ${expandedIndex === index ? 'w-[600px]' : 'w-[300px]'}`}
+              >
+                <div className="flex h-[450px]">
+                  <div className="min-w-[300px] h-full relative group">
+                    <img src={mujer.img} alt={mujer.nombre} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#3b0f52]/90 via-transparent to-transparent opacity-80" />
+                    <div className="absolute bottom-0 p-8 w-full">
+                      <h4 className="text-white font-black text-2xl leading-tight">{mujer.nombre}</h4>
+                      <p className="text-[#18dbc1] text-sm font-bold uppercase tracking-widest mt-1">{mujer.rol}</p>
+                      {expandedIndex !== index && (
+                        <button onClick={() => setExpandedIndex(index)} className="mt-5 px-6 py-2 bg-white/10 backdrop-blur-md border border-white/30 text-white text-[10px] font-black rounded-full hover:bg-[#18dbc1] hover:text-[#3b0f52] transition-all uppercase tracking-tighter">Ver más +</button>
+                      )}
+                    </div>
+                  </div>
+                  {expandedIndex === index && (
+                    <div className="p-10 flex flex-col justify-center bg-white animate-slide-in-right w-full relative">
+                      <button onClick={() => setExpandedIndex(null)} className="absolute top-6 right-6 text-gray-300 hover:text-[#7422ff] transition-colors"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                      <h4 className="text-[#7422ff] font-black text-2xl mb-4 italic tracking-tight underline decoration-[#18dbc1] decoration-4 underline-offset-4">Su Historia</h4>
+                      <p className="text-gray-500 text-lg leading-relaxed font-medium mb-6">"{mujer.detalle}"</p>
+                      <div className="flex items-center gap-3"><div className="w-8 h-[2px] bg-[#18dbc1]"></div><span className="text-[#3b0f52] font-black text-xs uppercase italic">Talento Yape</span></div>
+                    </div>
+                  )}
                 </div>
               </div>
-              <p className="text-gray-600 text-lg leading-relaxed font-medium">
-                "Entré sin saber mucho de Firebase y hoy manejo la base de datos
-                de miles de usuarios. ¡Aquí se aprende volando!"
-              </p>
-            </div>
-
-            {/* Card 2 */}
-            <div className="bg-white p-8 md:p-10 rounded-[3rem] shadow-xl border-b-[12px] border-[#3b0f52] transform hover:rotate-1 transition-transform">
-              <div className="flex items-center gap-5 mb-6">
-                <div className="w-16 h-16 bg-[#25d3c9] rounded-2xl flex items-center justify-center text-[#3b0f52] font-black">
-                  A
-                </div>
-                <div>
-                  <h4 className="font-black text-2xl text-[#3b0f52]">Andrea</h4>
-                  <p className="text-[#7e1d91] font-bold italic">Diseño UX</p>
-                </div>
-              </div>
-              <p className="text-gray-600 text-lg leading-relaxed font-medium">
-                "Lo que más me gusta es la flexibilidad. Puedo estudiar y
-                trabajar sin morir en el intento, y el equipo es genial."
-              </p>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-white p-8 md:p-10 rounded-[3rem] shadow-xl border-b-[12px] border-[#7e1d91] transform hover:-rotate-1 transition-transform">
-              <div className="flex items-center gap-5 mb-6">
-                <div className="w-16 h-16 bg-[#3b0f52] rounded-2xl flex items-center justify-center text-white font-black">
-                  M
-                </div>
-                <div>
-                  <h4 className="font-black text-2xl text-[#3b0f52]">Mateo</h4>
-                  <p className="text-[#25d3c9] font-bold italic">Soporte</p>
-                </div>
-              </div>
-              <p className="text-gray-600 text-lg leading-relaxed font-medium">
-                "Mi primer empleo y ya siento que crecí un montón. El ambiente
-                es súper joven y todos nos ayudamos entre todos."
-              </p>
-            </div>
-
-            {/* Card 4 */}
-            <div className="bg-white p-8 md:p-10 rounded-[3rem] shadow-xl border-b-[12px] border-[#25d3c9] transform hover:rotate-1 transition-transform">
-              <div className="flex items-center gap-5 mb-6">
-                <div className="w-16 h-16 bg-[#7e1d91] rounded-2xl flex items-center justify-center text-white font-black">
-                  L
-                </div>
-                <div>
-                  <h4 className="font-black text-2xl text-[#3b0f52]">
-                    Luciana
-                  </h4>
-                  <p className="text-[#7e1d91] font-bold italic">Marketing</p>
-                </div>
-              </div>
-              <p className="text-gray-600 text-lg leading-relaxed font-medium">
-                "En Yape las ideas locas se escuchan. Si tienes una iniciativa,
-                te dan el espacio para hacerla realidad."
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* CARRUSEL INFORMATIVO CON LINK */}
-      {/* CORRECCIÓN: Padding lateral px-6 para asegurar espacio en móviles */}
+      {/* SWIPER CORREGIDO */}
       <section className="py-20 px-6 md:px-10">
         <div className="max-w-7xl mx-auto">
+
           <Swiper
             spaceBetween={30}
             autoplay={{ delay: 4500 }}
             pagination={{ clickable: true }}
             modules={[Autoplay, Pagination]}
-            className="rounded-[3rem] md:rounded-[4rem] overflow-hidden shadow-2xl"
+            className="rounded-[3rem] overflow-hidden shadow-2xl"
           >
-            {/* Slide 1 */}
+
+            {/* SLIDE 1 */}
             <SwiperSlide>
-              {/* CORRECCIÓN: Estructura flex revisada para móvil y p-8 adicional */}
-              <div className="flex flex-col lg:flex-row bg-[#7e1d91] min-h-[500px]">
-                <div className="lg:w-1/2 p-8 md:p-16 lg:p-20 flex flex-col justify-center">
-                  <h3 className="text-4xl md:text-5xl font-black text-[#25d3c9] mb-6 italic leading-tight">
+              <div className="flex flex-col lg:flex-row min-h-[500px] bg-[#7e1d91]">
+
+                <div className="lg:w-1/2 p-10 md:p-16 flex flex-col justify-center">
+                  <h3 className="text-4xl md:text-5xl font-black text-[#25d3c9] mb-6 italic">
                     Cero floro, puro talento
                   </h3>
-                  <p className="text-white text-xl md:text-2xl mb-10 leading-relaxed font-light">
-                    Buscamos gente con chispa. No nos importa de dónde vienes,
-                    sino a dónde quieres llegar con nosotros.
+
+                  <p className="text-white text-xl md:text-2xl mb-10">
+                    Buscamos gente con ganas de crecer.
                   </p>
-                  <a
-                    href="/productos"
-                    className="text-white text-xl font-black underline decoration-[#25d3c9] decoration-[8px] underline-offset-8 hover:text-[#25d3c9] transition-all"
+
+                  <Link
+                    to="/productos"
+                    className="text-white text-xl font-black underline decoration-[#25d3c9] underline-offset-8"
                   >
                     VER VACANTES →
-                  </a>
+                  </Link>
                 </div>
-                <div className="lg:w-1/2 bg-gray-200">
+
+                <div className="lg:w-1/2">
                   <img
-                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1000"
-                    alt="Trabajo en equipo"
+                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
                     className="w-full h-full object-cover"
+                    alt="team"
                   />
                 </div>
+
               </div>
             </SwiperSlide>
 
-            {/* Slide 2 */}
+            {/* SLIDE 2 */}
             <SwiperSlide>
-              {/* CORRECCIÓN: Estructura flex revisada para móvil y p-8 adicional */}
-              <div className="flex flex-col lg:flex-row bg-[#25d3c9] min-h-[500px]">
-                <div className="lg:w-1/2 p-8 md:p-16 lg:p-20 flex flex-col justify-center">
-                  <h3 className="text-4xl md:text-5xl font-black text-[#3b0f52] mb-6 italic leading-tight">
+              <div className="flex flex-col lg:flex-row min-h-[500px] bg-[#25d3c9]">
+
+                <div className="lg:w-1/2 p-10 md:p-16 flex flex-col justify-center">
+                  <h3 className="text-4xl md:text-5xl font-black text-[#3b0f52] mb-6 italic">
                     Beneficios nivel Pro
                   </h3>
-                  <p className="text-[#3b0f52] text-xl md:text-2xl mb-10 leading-relaxed font-medium">
-                    Línea de carrera, capacitaciones constantes y el mejor
-                    ambiente laboral para que nunca dejes de aprender.
+
+                  <p className="text-[#3b0f52] text-xl md:text-2xl mb-10">
+                    Crecimiento, aprendizaje y oportunidades reales.
                   </p>
-                  <a
-                    href="/beneficios"
-                    className="text-[#3b0f52] text-xl font-black underline decoration-white decoration-[8px] underline-offset-8 hover:text-white transition-all"
+
+                  <Link
+                    to="/beneficios"
+                    className="text-[#3b0f52] text-xl font-black underline decoration-white underline-offset-8"
                   >
                     CONOCE LOS BENEFICIOS →
-                  </a>
+                  </Link>
                 </div>
-                <div className="lg:w-1/2 bg-white">
+
+                <div className="lg:w-1/2">
                   <img
-                    src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1000"
-                    alt="Oficinas"
+                    src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4"
                     className="w-full h-full object-cover"
+                    alt="office"
                   />
                 </div>
+
               </div>
             </SwiperSlide>
+
           </Swiper>
+
         </div>
       </section>
 
-      <div className="h-24"></div>
+      <style dangerouslySetInnerHTML={{ __html: `
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .animate-slide-in-right { animation: slideInRight 0.5s ease-out; }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+      `}} />
+
     </div>
   );
 }

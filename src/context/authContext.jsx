@@ -8,7 +8,7 @@ import {
   signInWithPopup,
   updateProfile,
 } from "firebase/auth";
-import { auth, db, storage } from "../lib/firebase";
+import { auth, db } from "../lib/firebase";
 import {
   doc,
   setDoc,
@@ -20,15 +20,11 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
 import toast from "react-hot-toast";
 
 const AuthContext = createContext();
+
+// Puedes agregar correos aquí para asignar rol de admin automáticamente
 const adminEmails = [];
 
 export const useAuth = () => {
@@ -41,14 +37,19 @@ export const AuthProvider = ({ children }) => {
   const [usuarioActual, setUsuarioActual] = useState(null);
   const [cargando, setCargando] = useState(true);
 
+  /**
+   * Registra un nuevo usuario usando correo, contraseña y un link de imagen opcional.
+   */
   const registrarUsuario = async (
     correo,
     nombre,
     username,
     contrasena,
-    foto,
+    fotoURL_ingresada,
   ) => {
     const usernameLower = username.toLowerCase();
+    
+    // Validar si el username ya existe
     const q = query(
       collection(db, "usuarios"),
       where("username", "==", usernameLower),
@@ -61,31 +62,30 @@ export const AuthProvider = ({ children }) => {
     const res = await createUserWithEmailAndPassword(auth, correo, contrasena);
     const user = res.user;
 
-    let fotoURL = "/default-user.png";
-    if (foto) {
-      const storageRef = ref(
-        storage,
-        `perfiles/${user.uid}/${Date.now()}-${foto.name}`,
-      );
-      await uploadBytes(storageRef, foto);
-      fotoURL = await getDownloadURL(storageRef);
-    }
+    // Si no hay link, se guarda como string vacío para disparar la lógica de iniciales en la UI
+    const fotoFinal = fotoURL_ingresada || "";
 
     await setDoc(doc(db, "usuarios", user.uid), {
-      uid: user.uid, // Guardamos el uid para referencia
+      uid: user.uid,
       correo: user.email,
       nombre: nombre,
       username: usernameLower,
       rol: "cliente",
-      fotoURL: fotoURL,
+      fotoURL: fotoFinal,
       fechaCreacion: serverTimestamp(),
     });
 
-    await updateProfile(user, { displayName: nombre, photoURL: fotoURL });
+    await updateProfile(user, { 
+      displayName: nombre, 
+      photoURL: fotoFinal 
+    });
 
     return res;
   };
 
+  /**
+   * Inicia sesión con correo o con el nombre de usuario.
+   */
   const iniciarSesion = async (identifier, contrasena) => {
     let correo = identifier;
     if (!identifier.includes("@")) {
@@ -104,6 +104,9 @@ export const AuthProvider = ({ children }) => {
     return signInWithEmailAndPassword(auth, correo, contrasena);
   };
 
+  /**
+   * Autenticación con Google.
+   */
   const iniciarConGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -128,7 +131,7 @@ export const AuthProvider = ({ children }) => {
           nombre: user.displayName || "Usuario Google",
           username: usernameFromEmail,
           rol: userRole,
-          fotoURL: user.photoURL || "/default-user.png",
+          fotoURL: user.photoURL || "",
           fechaCreacion: serverTimestamp(),
         };
         await setDoc(docRef, newUserDoc);
@@ -144,16 +147,24 @@ export const AuthProvider = ({ children }) => {
 
   const cerrarSesion = () => signOut(auth);
 
-  const actualizarPerfil = async ({ nombre, username, imageFile }) => {
+  /**
+   * Actualiza el perfil permitiendo cambiar nombre, username y foto mediante LINK.
+   */
+  const actualizarPerfil = async ({ nombre, username, fotoURL_nueva }) => {
     const promise = new Promise(async (resolve, reject) => {
       if (!usuarioActual)
         return reject(new Error("No hay usuario autenticado."));
 
       const userRef = doc(db, "usuarios", usuarioActual.uid);
       const updateData = {};
-      let newPhotoURL = usuarioActual.fotoURL;
+      let finalPhotoURL = usuarioActual.fotoURL;
 
-      if (nombre && nombre !== usuarioActual.nombre) updateData.nombre = nombre;
+      // 1. Validar Cambio de Nombre
+      if (nombre && nombre !== usuarioActual.nombre) {
+        updateData.nombre = nombre;
+      }
+
+      // 2. Validar Cambio de Username
       if (username && username.toLowerCase() !== usuarioActual.username) {
         const usernameLower = username.toLowerCase();
         const q = query(
@@ -170,49 +181,40 @@ export const AuthProvider = ({ children }) => {
         updateData.username = usernameLower;
       }
 
-      if (imageFile) {
-        const oldPhotoURL = usuarioActual.fotoURL;
-        const storageRef = ref(
-          storage,
-          `perfiles/${usuarioActual.uid}/${Date.now()}-${imageFile.name}`,
-        );
-        await uploadBytes(storageRef, imageFile);
-        newPhotoURL = await getDownloadURL(storageRef);
-        updateData.fotoURL = newPhotoURL;
-
-        if (oldPhotoURL && oldPhotoURL.includes("firebasestorage")) {
-          try {
-            await deleteObject(ref(storage, oldPhotoURL));
-          } catch (error) {
-            console.warn("No se pudo borrar la foto antigua:", error);
-          }
-        }
+      // 3. Validar Cambio de Foto (vía Link)
+      // Si fotoURL_nueva es null o undefined, se asume que no hay cambios o se quiere borrar
+      const cambioFoto = fotoURL_nueva !== undefined && fotoURL_nueva !== usuarioActual.fotoURL;
+      if (cambioFoto) {
+        finalPhotoURL = fotoURL_nueva || ""; // Si está vacío, activará la inicial
+        updateData.fotoURL = finalPhotoURL;
       }
 
+      // Aplicar cambios en Firestore si existen
       if (Object.keys(updateData).length > 0) {
         await updateDoc(userRef, updateData);
       }
 
+      // Sincronizar con el perfil de Firebase Auth
       await updateProfile(auth.currentUser, {
         displayName: updateData.nombre || usuarioActual.nombre,
-        photoURL: newPhotoURL,
+        photoURL: finalPhotoURL,
       });
 
       resolve({
-        newPhotoURL,
-        imageFile,
+        finalPhotoURL,
+        fotoCambiada: cambioFoto,
         updated: Object.keys(updateData).length > 0,
       });
     });
 
     toast.promise(promise, {
       loading: "Actualizando perfil...",
-      success: ({ newPhotoURL, imageFile, updated }) => {
-        if (imageFile) {
+      success: ({ finalPhotoURL, fotoCambiada, updated }) => {
+        if (fotoCambiada) {
           toast.custom(
             (t) => (
               <div
-                className={`${t.visible ? "animate-enter" : "animate-leave"} relative max-w-sm w-full bg-gradient-to-r from-[#7e1d91] via-[#9f53c1] to-[#bd6fe4] shadow-2xl rounded-3xl pointer-events-auto ring-1 ring-white/10 overflow-hidden`}
+                className={`${t.visible ? "animate-enter" : "animate-leave"} relative max-w-sm w-full bg-gradient-to from-[#7e1d91] via-[#9f53c1] to-[#bd6fe4] shadow-2xl rounded-3xl pointer-events-auto ring-1 ring-white/10 overflow-hidden`}
               >
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.28),_transparent_45%)] pointer-events-none" />
                 <button
@@ -220,46 +222,34 @@ export const AuthProvider = ({ children }) => {
                   className="absolute top-3 right-3 text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors z-10"
                 >
                   <span className="sr-only">Cerrar</span>
-                  <svg
-                    className="h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
+                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
                 </button>
                 <div className="flex items-center p-5 gap-4 relative">
                   <div className="flex-shrink-0 relative">
-                    <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-xl border border-white/20 bg-white/20">
-                      <img
-                        className="h-full w-full object-cover"
-                        src={newPhotoURL}
-                        alt="Nueva foto de perfil"
-                      />
+                    <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-xl border border-white/20 bg-white/20 flex items-center justify-center text-white font-bold text-2xl uppercase">
+                      {finalPhotoURL ? (
+                        <img
+                          className="h-full w-full object-cover"
+                          src={finalPhotoURL}
+                          alt="Perfil"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      ) : (
+                        <span>{usuarioActual?.username?.charAt(0) || "U"}</span>
+                      )}
                     </div>
                     <div className="absolute -bottom-1 -right-1 bg-[#5eead4] rounded-full p-1 border-2 border-white shadow-sm">
-                      <svg
-                        className="h-3 w-3 text-white"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
+                      <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     </div>
                   </div>
                   <div className="flex-1 text-left">
                     <p className="text-lg font-semibold text-white">¡Éxito!</p>
                     <p className="mt-1 text-sm text-[#f3e6ff]">
-                      Tu foto de perfil ha sido actualizada.
+                      Tu perfil ha sido actualizado correctamente.
                     </p>
                   </div>
                 </div>
@@ -276,9 +266,12 @@ export const AuthProvider = ({ children }) => {
       },
       error: (err) => err.message || "Hubo un error al actualizar.",
     });
-    await promise.catch(() => {}); // Evita unhandled promise rejection en consola
+    await promise.catch(() => {});
   };
 
+  /**
+   * Escuchador del estado de autenticación.
+   */
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
