@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+// Ya no necesitamos importar BrowserRouter aquí porque está en App.jsx
 import App from './App.jsx';
 import './index.css';
 
@@ -11,17 +11,12 @@ import { ModalProvider } from './context/ModalContext.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    {/* Añadimos basename="/YAPPE-PROYECT" para que las rutas funcionen 
-        correctamente en GitHub Pages.
-    */}
-    <BrowserRouter basename="/YAPPE-PROYECT">
-      <AuthProvider>
-        <EdicionProvider>
-          <ModalProvider>
-            <App />
-          </ModalProvider>
-        </EdicionProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <AuthProvider>
+      <EdicionProvider>
+        <ModalProvider>
+          <App />
+        </ModalProvider>
+      </EdicionProvider>
+    </AuthProvider>
   </React.StrictMode>
-); 
+);
