@@ -3,8 +3,6 @@ import { lazy, Suspense } from "react";
 
 import { MascotProvider } from "./context/MascotContext";
 
-// 2. IMPORTACIÓN DE COMPONENTES DE DISEÑO
-
 import MainLayout from "./layouts/MainLayout";
 import YapeMascot from "./componentes/YapeMascot/YapeMascot";
 import "./App.css";
@@ -28,9 +26,6 @@ const FormularioDePostulacion = lazy(
 function App() {
   return (
     <MascotProvider>
-      {/* Se envuelve todo en BrowserRouter con el basename de tu repositorio 
-          para que las rutas funcionen correctamente en GitHub Pages.
-      */}
       <BrowserRouter basename="/YAPPE-PROYECT">
         <ScrollToTop />
 

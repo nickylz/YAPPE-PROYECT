@@ -1,7 +1,12 @@
 /* En tu index.css */
 @keyframes blink {
-  0%, 100% { transform: scaleY(1); }
-  5% { transform: scaleY(0.1); }
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  5% {
+    transform: scaleY(0.1);
+  }
 }
 
 .animate-blink {
@@ -21,12 +26,302 @@ body {
   margin: 0;
 }
 
-/* --- Ocultar la barra de desplazamiento --- */
-::-webkit-scrollbar {
-  display: none; /* Para navegadores WebKit como Chrome, Safari */
+/* ============================================================
+   ESTRUCTURA GLOBAL DEL CHATBOT (NORMAL Y ALTO CONTRASTE)
+   ============================================================ */
+
+/* 1. CONTENEDOR PRINCIPAL: ESTABLE Y FIJO */
+.mascot-chat-container {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 520px !important; /* Altura fija para que no crezca hacia el Navbar */
+  max-height: 80vh !important;
+  width: 90% !important;
+  max-width: 360px !important;
+  position: fixed !important;
+  bottom: 85px !important;
+  right: 20px !important;
+  background-color: white !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  z-index: 9999 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-body {
-  -ms-overflow-style: none;  /* Para Internet Explorer y Edge */
-  scrollbar-width: none;  /* Para Firefox */
+/* 2. ÁREA DE MENSAJES CON SCROLL INTERNO */
+.mascot-chat-container div[class*="overflow-y-auto"] {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  padding: 15px !important;
+}
+/* ============================================================
+   ESTRUCTURA BASE DEL CHATBOT (ESTABLE Y RESPONSIVO)
+   ============================================================ */
+
+.mascot-chat-container {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 520px !important; /* Altura fija para evitar que crezca solo */
+  max-height: 80vh !important;
+  width: 90% !important;
+  max-width: 360px !important;
+  position: fixed !important;
+  bottom: 85px !important;
+  right: 20px !important;
+  background-color: white !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  z-index: 9999 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Área de mensajes con scroll interno */
+.mascot-chat-container div[class*="overflow-y-auto"] {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  padding: 15px !important;
+}
+/* ============================================================
+   ESTRUCTURA BASE DEL CHATBOT (ESTABLE Y RESPONSIVO)
+   ============================================================ */
+
+.mascot-chat-container {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 520px !important; /* Altura fija para que no crezca hacia arriba */
+  max-height: 80vh !important;
+  width: 90% !important;
+  max-width: 360px !important;
+  position: fixed !important;
+  bottom: 85px !important;
+  right: 20px !important;
+  background-color: white !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  z-index: 9999 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Área de mensajes con scroll interno */
+.mascot-chat-container div[class*="overflow-y-auto"] {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  padding: 15px !important;
+}
+
+/* ============================================================
+   SISTEMA DE ALTO CONTRASTE (OPTIMIZADO Y PROTEGIDO)
+   ============================================================ */
+
+body.high-contrast {
+  background-color: #000000 !important;
+}
+
+/* 1. NAVBAR ESTÁTICO (IGNORA EL SCROLL) */
+body.high-contrast header,
+body.high-contrast nav,
+body.high-contrast [class*="navbar"],
+body.high-contrast [class*="Header"] {
+  background-color: #000000 !important;
+  border-bottom: 3px solid #ffff00 !important;
+  transition: none !important;
+  z-index: 10000 !important;
+}
+
+/* Letras del menú siempre amarillas */
+body.high-contrast header a,
+body.high-contrast nav a,
+body.high-contrast header button {
+  color: #ffff00 !important;
+  opacity: 1 !important;
+}
+
+/* 2. PROTECCIÓN TOTAL DEL LOGO (FIX) */
+/* Oscurecemos el resto de imágenes, pero protegemos el logo de Yape */
+body.high-contrast
+  img:not([src*="yape"], [src*="icon"], [class*="icon"], [class*="yape"]) {
+  filter: grayscale(1) contrast(1.5) brightness(0.3) !important;
+}
+
+/* Forzamos que el logo resalte (Navbar y Chat) */
+body.high-contrast .logo-yape,
+body.high-contrast .yape-logo,
+body.high-contrast img[src*="yape"],
+body.high-contrast img[src*="logo"],
+body.high-contrast header img {
+  filter: brightness(1.5) contrast(1.2) !important; /* Brillo extra */
+  opacity: 1 !important;
+  background-color: transparent !important;
+}
+
+/* 3. TEXTOS GENERALES DE LA WEB */
+body.high-contrast h1,
+body.high-contrast h2,
+body.high-contrast h3,
+body.high-contrast p,
+body.high-contrast span:not(.mascot-chat-container *) {
+  background-color: transparent !important;
+  color: #ffff00 !important;
+  text-shadow: 2px 2px 0px #000000;
+}
+
+/* 4. EL BOT EN ALTO CONTRASTE */
+body.high-contrast .mascot-chat-container {
+  background-color: #1a1a1a !important;
+  border: 4px solid #ffff00 !important;
+  top: 100px !important; /* Espacio seguro bajo el Navbar */
+  margin-top: 20px !important; /* Un margen pequeño es suficiente para que no pegue al borde */
+  bottom: auto !important;
+  box-shadow: 0 0 30px rgba(255, 255, 0, 0.2) !important;
+}
+
+/* Globos de mensajes y textos del bot */
+body.high-contrast .mascot-chat-container div[class*="bg-white"],
+body.high-contrast .mascot-chat-container div[class*="bg-gray"] {
+  background-color: #000000 !important;
+  border: 1.5px solid #ffff00 !important;
+}
+
+body.high-contrast .mascot-chat-container p,
+body.high-contrast .mascot-chat-container span {
+  color: #ffff00 !important;
+}
+
+/* 5. BARRA DE ESCRITURA (INPUT) LEGIBLE */
+body.high-contrast .mascot-chat-container div[class*="border-t"] {
+  background-color: #1a1a1a !important;
+  border-top: 2px solid #ffff00 !important;
+  padding: 10px !important;
+}
+
+body.high-contrast .mascot-chat-container input {
+  background-color: #000000 !important;
+  color: #ffff00 !important;
+  border: 2px solid #ffff00 !important;
+  border-radius: 10px !important;
+  caret-color: #ffff00 !important; /* Cursor amarillo */
+}
+
+body.high-contrast .mascot-chat-container input::placeholder {
+  color: rgba(255, 255, 0, 0.5) !important;
+}
+
+/* Botón enviar */
+body.high-contrast .mascot-chat-container button[type="submit"],
+body.high-contrast .mascot-chat-container button:has(svg) {
+  background-color: #000000 !important;
+  color: #ffff00 !important;
+  border: 1px solid #ffff00 !important;
+}
+
+/* ============================================================
+   Ajuste de Tipografía para Visión Borrosa (Mejora AAA)
+   ============================================================ */
+
+body.high-contrast p,
+body.high-contrast span {
+  font-weight: 500 !important; /* Texto un poco más grueso */
+}
+
+/* Títulos de las tarjetas (Data Scientist, etc.) */
+body.high-contrast div[class*="border"] h2 {
+  font-size: 1.6em !important;
+}
+
+/* Botones y enlaces */
+body.high-contrast a,
+body.high-contrast button {
+  font-weight: bold !important;
+}
+
+/* ============================================================
+   CORRECCIÓN DEFINITIVA: POSICIÓN DEL BOT (ALTO CONTRASTE)
+   ============================================================ */
+
+body.high-contrast .mascot-chat-container {
+  filter: none !important;
+  background-color: #1a1a1a !important;
+  border: 4px solid #ffff00 !important;
+  box-shadow: 0 0 30px rgba(255, 255, 0, 0.2) !important;
+  z-index: 9999 !important;
+
+  /* En pantallas grandes (PC), mantenemos un margen moderado */
+  margin-top: 40px !important;
+}
+
+/* ============================================================
+   CONTROL DEFINITIVO DE POSICIÓN (ANTI-DESPLAZAMIENTO)
+   ============================================================ */
+
+/* 1. CELULARES (De 375px a 600px) */
+
+@media (max-width: 600px) {
+  .mascot-chat-container {
+    position: fixed !important;
+    /* Usamos vh (viewport height) para asegurar que no baje de más */
+    bottom: 70px !important;
+    right: 5% !important;
+    width: 90% !important;
+
+    /* Ajustamos la altura según el tamaño del celular */
+    height: auto !important;
+    max-height: 400px !important;
+
+    /* Evita que cualquier margen lo empuje */
+    margin: 0 !important;
+    top: auto !important;
+    transform: none !important;
+  }
+  body.high-contrast .text-4xl {
+    font-size: 1.8rem !important; /* Tamaño potente para celular */
+  }
+
+  /* Reducimos el área de mensajes para que quepa todo */
+  .mascot-chat-container div[class*="flex-1"] {
+    max-height: 250px !important;
+    overflow-y: auto !important;
+  }
+}
+
+@media (max-width: 600px) {
+  body.high-contrast .mascot-chat-container {
+    background-color: #000000 !important;
+    border: 3px solid #ffff00 !important;
+    /* Aseguramos que mantenga la misma posición anclada */
+    bottom: 80px !important;
+    top: auto !important;
+    margin-top: 0 !important;
+  }
+}
+/* 2. CELULARES MINI (375px o menos - iPhone SE) */
+@media (max-width: 380px) {
+  .mascot-chat-container {
+    bottom: 65px !important;
+    max-height: 380px !important;
+  }
+  body.high-contrast .text-4xl {
+    font-size: 1.8rem !important; /* Tamaño potente para celular */
+  }
+
+  /* Achicamos la letra para que el bot no crezca hacia abajo */
+  .mascot-chat-container * {
+    font-size: 13px !important;
+  }
+}
+
+/* 3. FIX ALTO CONTRASTE (Sincronizado) */
+body.high-contrast .mascot-chat-container {
+  background-color: #000000 !important;
+  border: 3px solid #ffff00 !important;
+  /* Forzamos que se mantenga arriba del botón flotante */
+  z-index: 99999 !important;
 }

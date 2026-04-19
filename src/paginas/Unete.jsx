@@ -16,11 +16,11 @@ export default function Unete() {
   const [vacantes, setVacantes] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [cargando, setCargando] = useState(true);
-  // 1. Estados para controlar el Modal
+  // 1 Estados para controlar el Modal
   const [selectedJob, setSelectedJob] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 2. Función para abrirlo
+  // 2 Función para abrirlo
   const openDetails = (job) => {
     setSelectedJob(job);
     setIsModalOpen(true);
@@ -95,7 +95,6 @@ export default function Unete() {
         </div>
       </div>
 
-      {/* GRILLA DE VACANTES */}
       <section className="max-w-7xl mx-auto py-20 px-4">
         <div className="flex items-center justify-between mb-12">
           <h2 className="text-3xl font-black text-[#3b0f52]">
@@ -177,7 +176,6 @@ export default function Unete() {
         )}
         {isModalOpen && selectedJob && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            {/* Overlay con desenfoque más profesional */}
             <div
               className="absolute inset-0 bg-[#2d005f]/40 backdrop-blur-md"
               onClick={() => setIsModalOpen(false)}
@@ -185,7 +183,6 @@ export default function Unete() {
 
             {/* Contenedor del Modal */}
             <div className="relative bg-white w-full max-w-xl rounded-[3rem] shadow-[0_20px_50px_rgba(116,34,255,0.3)] overflow-hidden animate-in fade-in zoom-in duration-300">
-              {/* Cabecera con Color Yappe */}
               <div className="bg-[#7422ff] p-8 pb-12 text-white relative">
                 <button
                   onClick={() => setIsModalOpen(false)}
@@ -201,7 +198,6 @@ export default function Unete() {
                 </h2>
               </div>
 
-              {/* Cuerpo del Modal con curvas */}
               <div className="bg-white -mt-8 rounded-t-[3rem] p-8 sm:p-10 relative">
                 <div className="flex items-center gap-2 mb-6 text-[#7422ff] font-bold uppercase text-sm">
                   <svg
@@ -250,7 +246,6 @@ export default function Unete() {
                   </div>
                 </div>
 
-                {/* Botón de Postulación Estilo Yappe */}
                 <button
                   className="w-full mt-10 bg-[#7422ff] text-white py-5 rounded-2xl font-black uppercase italic text-xl hover:bg-[#00d1b2] hover:text-[#2d005f] transition-all duration-300 shadow-[0_10px_20px_rgba(116,34,255,0.4)] active:scale-95"
                   onClick={() => {
