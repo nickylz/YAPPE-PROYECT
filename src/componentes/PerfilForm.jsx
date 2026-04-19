@@ -3,11 +3,8 @@ import { useAuth } from "../context/authContext";
 import { format } from 'date-fns';
 import { Edit2, Loader, Link as LinkIcon, User, ChevronUp, CheckCircle2 } from 'lucide-react';
 
-const getInitials = (name) => {
-    if (!name) return "?";
-    const words = name.split(' ');
-    return words.length > 1 ? (words[0][0] + words[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase();
-};
+// URL de la imagen predeterminada
+const FOTO_PREDETERMINADA = "https://marketingperu.beglobal.biz/wp-content/uploads/2025/06/yapito-boliviano.png";
 
 export default function PerfilForm() {
   const { usuarioActual, actualizarPerfil, cargando: cargandoAuth } = useAuth();
@@ -17,7 +14,7 @@ export default function PerfilForm() {
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [nuevoLinkFoto, setNuevoLinkFoto] = useState('');
 
-  // Validación de formatos (solo permitimos estos)
+  // Validación de formatos permitidos
   const formatosValidos = /\.(png|jpg|gif)$/i;
 
   useEffect(() => {
@@ -33,7 +30,6 @@ export default function PerfilForm() {
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
-      // Solo llamamos a la función, las notis vienen del context/modal
       await actualizarPerfil({ nombre, username });
     } catch (error) {
       console.error("Error al actualizar datos:", error);
@@ -45,9 +41,8 @@ export default function PerfilForm() {
   const handleCambiarFotoPorLink = async () => {
     if (!nuevoLinkFoto) return;
     
-    // Validación local antes de enviar
     if (!formatosValidos.test(nuevoLinkFoto)) {
-      alert("Formato no válido. Usa: .png, .jpg  o .gif");
+      alert("Formato no válido. Usa: .png, .jpg o .gif");
       return;
     }
 
@@ -84,11 +79,15 @@ export default function PerfilForm() {
         <div className="flex flex-col sm:flex-row items-center gap-8">
           <div className="relative">
             <div className="w-36 h-36 rounded-[40px] overflow-hidden border-4 border-white shadow-2xl bg-gray-50 flex items-center justify-center">
-              {usuarioActual.fotoURL ? (
-                <img src={usuarioActual.fotoURL} alt="Perfil" className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-[#7e1d91] text-5xl font-black italic uppercase">{getInitials(username || nombre)}</span>
-              )}
+              {/* Prioriza fotoURL, si no existe o falla, carga FOTO_PREDETERMINADA */}
+              <img 
+                src={usuarioActual.fotoURL || FOTO_PREDETERMINADA} 
+                alt="Perfil" 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.src = FOTO_PREDETERMINADA;
+                }}
+              />
             </div>
             <button 
               onClick={() => setShowLinkInput(!showLinkInput)}
@@ -100,7 +99,7 @@ export default function PerfilForm() {
 
           <div className="text-center sm:text-left flex-1">
             <h2 className="text-5xl font-black text-[#3b0f52] italic uppercase tracking-tighter leading-none mb-4">
-              {usuarioActual.username}
+              {usuarioActual.username || "Usuario"}
             </h2>
             <div className="flex flex-wrap justify-center sm:justify-start gap-3">
               <span className="bg-[#fcfaff] text-[#7e1d91] text-[10px] font-black px-4 py-2 rounded-xl border border-purple-50 uppercase tracking-widest flex items-center gap-2">
@@ -143,7 +142,7 @@ export default function PerfilForm() {
       <div className="bg-white rounded-[45px] p-10 border border-gray-100 shadow-sm">
         <div className="mb-10 flex items-center gap-4">
           <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-[#7e1d91]">
-            <User size={24} />
+            <padding><User size={24} /></padding>
           </div>
           <h3 className="text-2xl font-black text-[#3b0f52] uppercase italic tracking-tight">Datos de Cuenta</h3>
         </div>
