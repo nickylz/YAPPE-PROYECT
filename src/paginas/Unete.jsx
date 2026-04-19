@@ -182,6 +182,7 @@ export default function Unete() {
             ></div>
 
             {/* Contenedor del Modal */}
+            {/* Contenedor del Modal */}
             <div className="relative bg-white w-full max-w-xl rounded-[3rem] shadow-[0_20px_50px_rgba(116,34,255,0.3)] overflow-hidden animate-in fade-in zoom-in duration-300">
               <div className="bg-[#7422ff] p-8 pb-12 text-white relative">
                 <button
