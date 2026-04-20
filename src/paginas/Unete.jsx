@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import empleoImg from "../componentes/img/empleo.png";
 
+
 export default function Unete() {
   const [vacantes, setVacantes] = useState([]);
   const [busqueda, setBusqueda] = useState("");
