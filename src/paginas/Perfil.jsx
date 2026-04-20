@@ -144,7 +144,7 @@ export default function Perfil() {
               {esAdmin || esEditor ? "Panel de Gestión" : "Mi Cuenta!"}
             </div>
             <h1 className="text-4xl md:text-7xl font-black text-white italic leading-[0.8] tracking-tighter mb-4">
-              Bienvenido <br />
+              Bienvenid@ <br />
               <span className="text-white/95">a tu perfil</span>
             </h1>
             <div className="flex flex-col items-center">
