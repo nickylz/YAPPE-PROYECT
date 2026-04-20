@@ -40,9 +40,11 @@ export default function Perfil() {
     );
   }
 
-  const esAdmin =
-    usuarioActual.rol === "admin" || usuarioActual.rol === "editor";
+  // Lógica de roles separada
+  const esAdmin = usuarioActual.rol === "admin";
+  const esEditor = usuarioActual.rol === "editor";
 
+  // Configuración base del menú (común para todos)
   const menuConfig = [
     {
       id: "perfil",
@@ -52,7 +54,9 @@ export default function Perfil() {
     },
   ];
 
+  // Estructura condicional por rol
   if (esAdmin) {
+    // El Administrador tiene acceso total
     menuConfig.push(
       {
         id: "usuarios",
@@ -83,9 +87,32 @@ export default function Perfil() {
         label: "Preguntas",
         icon: <HelpCircle size={18} />,
         component: <Preguntas />,
+      }
+    );
+  } else if (esEditor) {
+    // El Editor solo ve Empleos, Postulaciones y Preguntas
+    menuConfig.push(
+      {
+        id: "empleos",
+        label: "Empleos",
+        icon: <PlusCircle size={18} />,
+        component: <GestionSubirEmpleo />,
       },
+      {
+        id: "postulaciones",
+        label: "Postulaciones",
+        icon: <Briefcase size={18} />,
+        component: <GestionPostulaciones />,
+      },
+      {
+        id: "preguntas",
+        label: "Preguntas",
+        icon: <HelpCircle size={18} />,
+        component: <Preguntas />,
+      }
     );
   } else {
+    // Usuario estándar (Yaper@)
     menuConfig.push(
       {
         id: "mis-consultas",
@@ -98,7 +125,7 @@ export default function Perfil() {
         label: "Chat de Soporte",
         icon: <MessageSquare size={18} />,
         component: <Responder />,
-      },
+      }
     );
   }
 
@@ -107,16 +134,14 @@ export default function Perfil() {
 
   return (
     <div className="min-h-screen bg-[#fcfaff] font-sans overflow-x-hidden">
-      {/* -- BANNER COMPACTO Y CENTRADO --- */}
+      {/* --- BANNER --- */}
       <div className="w-full pt-16 md:pt-20 bg-[#3b0f52] relative overflow-hidden shadow-lg border-b-4 border-[#00d1c4]/20">
         <div className="absolute inset-0 bg-gradient-to-b from-[#3b0f52] via-[#7e1d91] to-[#601675] opacity-95"></div>
-        <div className="absolute top-5 left-[5%] w-24 h-24 bg-purple-400/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-[-10px] right-[5%] w-32 h-32 bg-purple-300/10 rounded-full blur-3xl"></div>
-
+        
         <div className="max-w-7xl mx-auto px-6 py-8 md:py-12 relative z-10">
           <div className="flex flex-col items-center justify-center text-center">
             <div className="inline-block bg-[#00d1c4] text-[#3b0f52] px-4 py-1 rounded-full font-black text-[10px] uppercase tracking-[0.2em] mb-4 shadow-xl shadow-[#00d1c4]/20">
-              {esAdmin ? "Panel Administrativo" : "Mi Cuenta!"}
+              {esAdmin || esEditor ? "Panel de Gestión" : "Mi Cuenta!"}
             </div>
             <h1 className="text-4xl md:text-7xl font-black text-white italic leading-[0.8] tracking-tighter mb-4">
               Bienvenido <br />
@@ -130,7 +155,7 @@ export default function Perfil() {
                 </span>
               </p>
               <p className="text-white/50 text-[10px] md:text-xs mt-3 font-bold uppercase tracking-[0.25em]">
-                {esAdmin
+                {esAdmin || esEditor
                   ? "Gestión de Ecosistema"
                   : "Revisa tus consultas y datos"}
               </p>
@@ -139,22 +164,20 @@ export default function Perfil() {
         </div>
       </div>
 
-      {/* --- SECCIÓN DE CONTENIDO -- */}
+      {/* --- CONTENIDO PRINCIPAL --- */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12">
         <div className="flex flex-col md:flex-row gap-8">
-          {/* --- SIDEBAR -- */}
+          {/* --- SIDEBAR --- */}
           <aside className="md:w-1/4 lg:w-72">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden w-full mb-6 flex items-center justify-center gap-3 px-6 py-4 bg-[#7e1d91] text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl"
             >
-              {isMenuOpen ? <X size={18} /> : <Menu size={18} />}{" "}
+              {isMenuOpen ? <X size={18} /> : <Menu size={18} />} 
               {isMenuOpen ? "Cerrar" : "Menú"}
             </button>
 
-            <div
-              className={`${isMenuOpen ? "flex" : "hidden"} md:flex flex-col gap-2.5`}
-            >
+            <div className={`${isMenuOpen ? "flex" : "hidden"} md:flex flex-col gap-2.5`}>
               {menuConfig.map((tab) => (
                 <button
                   key={tab.id}
@@ -168,11 +191,7 @@ export default function Perfil() {
                       : "bg-white text-[#3b0f52] border border-purple-50 hover:bg-white hover:shadow-md"
                   }`}
                 >
-                  <span
-                    className={
-                      activeTab === tab.id ? "text-[#00d1c4]" : "text-[#7e1d91]"
-                    }
-                  >
+                  <span className={activeTab === tab.id ? "text-[#00d1c4]" : "text-[#7e1d91]"}>
                     {tab.icon}
                   </span>
                   {tab.label}
@@ -181,7 +200,7 @@ export default function Perfil() {
             </div>
           </aside>
 
-          {/* --- PANEL PRINCIPAL --- */}
+          {/* --- PANEL DE VISTA --- */}
           <main className="flex-1">
             <div className="bg-white rounded-[40px] p-6 md:p-12 shadow-[0_20px_70px_rgba(0,0,0,0.03)] border border-white min-h-[550px]">
               <div className="mb-8 flex items-center justify-center md:justify-start gap-4 border-b border-gray-50 pb-6">
