@@ -18,7 +18,7 @@ const MascotChat = ({ onClose, usuarioActual, onOpenLogin }) => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([
     {
-      text: "¡Hola! Soy YapeMascot 🧀. Elige una opción para ayudarte:\n1. Problemas con la página\n2. Quiero postular\n3. Gestión de perfil\n4. Atención Inclusiva\n5. Horarios de atención",
+      text: "¡Hola! Soy YapeMascot 🐾. Elige una opción para ayudarte:\n1. Problemas con la página\n2. Quiero postular\n3. Gestión de perfil\n4. Atención Inclusiva\n5. Horarios de atención",
       sender: "bot",
     },
   ]);
@@ -176,6 +176,28 @@ const MascotChat = ({ onClose, usuarioActual, onOpenLogin }) => {
           </div>
         ))}
         <div ref={messagesEndRef} />
+
+        {/* --- NUEVA SECCIÓN: CHIPS DE ACCIÓN (BOTONES AGREGADOS) --- */}
+        <div className="flex flex-wrap gap-2 pt-2">
+          <Link
+            to="/unete"
+            className="py-2 px-4 bg-white border border-[#00d1b2] text-[#00d1b2] rounded-full text-[11px] font-bold hover:bg-[#00d1b2] hover:text-white transition-all shadow-sm no-underline"
+          >
+            Únete 📄
+          </Link>
+          <Link
+            to="/libro-de-reclamaciones"
+            className="py-2 px-4 bg-white border border-[#00d1b2] text-[#00d1b2] rounded-full text-[11px] font-bold hover:bg-[#00d1b2] hover:text-white transition-all shadow-sm no-underline"
+          >
+            Libro de Reclamaciones 📘
+          </Link>
+          <Link
+            to="/centrodeayuda"
+            className="py-2 px-4 bg-white border border-[#00d1b2] text-[#00d1b2] rounded-full text-[11px] font-bold hover:bg-[#00d1b2] hover:text-white transition-all shadow-sm no-underline"
+          >
+            Centro de Ayuda 🚩
+          </Link>
+        </div>
       </div>
 
       {/* BARRA DE ENTRADA */}
